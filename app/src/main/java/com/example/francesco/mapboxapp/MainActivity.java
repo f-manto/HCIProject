@@ -1,12 +1,16 @@
 package com.example.francesco.mapboxapp;
 
 import android.Manifest;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -21,24 +25,22 @@ import android.view.MenuItem;
 import com.indooratlas.android.sdk.IALocation;
 import com.indooratlas.android.sdk.IALocationListener;
 import com.indooratlas.android.sdk.IALocationManager;
+import com.indooratlas.android.sdk.IALocationRequest;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
-import com.mapbox.mapboxsdk.annotations.Marker;
-import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-import com.mapbox.mapboxsdk.style.sources.Source;
-import com.mapbox.services.commons.geojson.Feature;
-import com.mapbox.services.commons.geojson.FeatureCollection;
-import com.mapbox.services.commons.geojson.Point;
-import com.mapbox.services.commons.models.Position;
+
+
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 import java.io.Console;
 import java.util.ArrayList;
@@ -55,10 +57,12 @@ public class MainActivity extends AppCompatActivity
     private static final String LAYER_ID = "com.mapbox.mapboxsdk.style.layers.symbol.layer.id";
 
     private MapView mapView;
-    private final int CODE_PERMISSIONS=1;
+    private final int CODE_PERMISSIONS=2;
     private MarkerViewOptions marker;
     private IALocationManager mIALocationManager;
     private MapboxMap mapboxMap;
+    private static final int REQUEST_CODE_ACCESS_COARSE_LOCATION = 1;
+    private static final String TAG = "IAExample";
 
 
     @Override
@@ -95,6 +99,7 @@ public class MainActivity extends AppCompatActivity
                 Manifest.permission.ACCESS_COARSE_LOCATION
         };
         ActivityCompat.requestPermissions( this, neededPermissions, CODE_PERMISSIONS );
+        ensurePermissions();
 
 
 
@@ -182,6 +187,7 @@ public class MainActivity extends AppCompatActivity
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        mIALocationManager.requestLocationUpdates(IALocationRequest.create(), this);
     }
 
     @Override
@@ -241,18 +247,70 @@ public class MainActivity extends AppCompatActivity
         IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
         Icon icon = iconFactory.fromResource(R.drawable.mapbox_mylocation_icon_default);
 
-        MarkerViewOptions marker2 = new MarkerViewOptions()
+        marker.getMarker().setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+
+        /*MarkerViewOptions marker2 = new MarkerViewOptions()
                 .position(new LatLng(location.getLatitude(), location.getLongitude()))
                 .title("Location")
                 .snippet(" ")
                 .icon(icon);
-        mapboxMap.addMarker(marker2);
+        mapboxMap.addMarker(marker2);*/
 
     }
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
         // N/A
     }
+
+
+
+
+            private void ensurePermissions() {
+
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+                    // we don't have access to coarse locations, hence we have not access to wifi either
+                    // check if this requires explanation to user
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                            Manifest.permission.ACCESS_COARSE_LOCATION)) {
+
+                        new AlertDialog.Builder(this)
+                                .setTitle("req")
+                                .setMessage("location required")
+                                .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Log.d(TAG, "request permissions");
+                                        ActivityCompat.requestPermissions(MainActivity.this,
+                                                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                                                REQUEST_CODE_ACCESS_COARSE_LOCATION);
+                                    }
+                                })
+                                .setNegativeButton("no", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Toast.makeText(MainActivity.this,
+                                                "denied",
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                })
+                                .show();
+
+                    } else {
+
+                        // ask user for permission
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                                REQUEST_CODE_ACCESS_COARSE_LOCATION);
+
+                    }
+
+
+                }else{
+                    Log.d("MyTag","no access required");
+                }
+            }
 
 
 }
