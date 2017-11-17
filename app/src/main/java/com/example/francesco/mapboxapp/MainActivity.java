@@ -1,6 +1,8 @@
 package com.example.francesco.mapboxapp;
 
 import android.Manifest;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -23,18 +25,34 @@ import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.mapbox.mapboxsdk.style.sources.Source;
+import com.mapbox.services.commons.geojson.Feature;
+import com.mapbox.services.commons.geojson.FeatureCollection;
+import com.mapbox.services.commons.geojson.Point;
+import com.mapbox.services.commons.models.Position;
 
 import java.io.Console;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, IALocationListener {
+        implements NavigationView.OnNavigationItemSelectedListener
+        , IALocationListener
+    , OnMapReadyCallback
+        {
 
+    private static final String SOURCE_ID = "com.mapbox.mapboxsdk.style.layers.symbol.source.id";
+    private static final String LAYER_ID = "com.mapbox.mapboxsdk.style.layers.symbol.layer.id";
 
     private MapView mapView;
     private final int CODE_PERMISSIONS=1;
@@ -67,33 +85,24 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+/*
         String[] neededPermissions = {
                 Manifest.permission.CHANGE_WIFI_STATE,
                 Manifest.permission.ACCESS_WIFI_STATE,
                 Manifest.permission.ACCESS_COARSE_LOCATION
         };
         ActivityCompat.requestPermissions( this, neededPermissions, CODE_PERMISSIONS );
+*/
 
 
         Mapbox.getInstance(this, "pk.eyJ1IjoiZ3JvdXAzaGNpIiwiYSI6ImNqOXhkZTU0MDB0bnAzM3Bva2JyY2M2Mm8ifQ.wimKY4mWCu4Pr8SIOlR_Qg");
         setContentView(R.layout.activity_main);
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
+        mapView.getMapAsync(this);
 
-        marker = new MarkerViewOptions().position(new LatLng(41.869912,-87.647903));
-        Log.d("a","outside");
-        mapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(MapboxMap mapboxMap) {
-                // One way to add a marker view
-                mapboxMap.addMarker(marker);
-                Log.d("a","inside");
-            }
-        });
 
-        setContentView(R.layout.activity_main);
-
-        //mIALocationManager = IALocationManager.create(this);
+        mIALocationManager = IALocationManager.create(this);
     }
 
     @Override
@@ -174,40 +183,50 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
-        mIALocationManager.destroy();
+        //mIALocationManager.destroy();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mapView.onPause();
-        if (mIALocationManager != null) {
+/*        if (mIALocationManager != null) {
             mIALocationManager.removeLocationUpdates(this);
-        }
+        }*/
 
     }
 
 
-    /**
+    @Override
+    public void onMapReady(MapboxMap mapboxMap) {
+
+               // Point.fromCoordinates(Position.fromCoordinates(41.869912,-87.647903))) // Boston Common Park
+
+        IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
+        Icon icon = iconFactory.fromResource(R.drawable.mapbox_mylocation_icon_default);
+        marker = new MarkerViewOptions()
+                .position(new LatLng(41.869912, -87.647903))
+                .title("Location")
+                .snippet("Welcome to you")
+                .icon(icon);
+        mapboxMap.addMarker(marker);
+
+    }
+
+
+/*
+    *
      * Callback for receiving locations.
      * This is where location updates can be handled by moving markers or the camera.
-     */
+*/
+
     public void onLocationChanged(IALocation location) {
        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
        //
         // marker.getMarker().setPosition(latLng);
-        //marker.setPosition(latLng);
+        marker.getMarker().setPosition(latLng);
 
-/*        if (mMarker == null) {
-            if (mMap != null) {
-                mMarker = mMap.addMarker(new MarkerOptions().position(latLng)
-                        .icon(BitmapDescriptorFactory.defaultMarker(HUE_IABLUE)));
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17.0f));
-            }
-        } else {
-            mMarker.setPosition(latLng);
-        }*/
     }
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
