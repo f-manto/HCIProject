@@ -206,11 +206,11 @@ public class MainActivity extends AppCompatActivity
     public void onMapReady(MapboxMap mapboxMap) {
 
 
-        //WayFinder navigation=new WayFinder();
+        WayFinder navigation=new WayFinder();
 
-        //navigation.printPoints();
+        navigation.printPoints(getApplicationContext());
 
-               // Point.fromCoordinates(Position.fromCoordinates(41.869912,-87.647903))) // Boston Common Park
+        Point.fromCoordinates(Position.fromCoordinates(41.869912,-87.647903)); // Boston Common Park
 
         this.mapboxMap = mapboxMap;
         IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
