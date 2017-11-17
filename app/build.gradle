@@ -42,13 +42,11 @@ dependencies {
 dependencies {
     compile 'com.indooratlas.android:indooratlas-android-sdk:2.5.4'
 }
+dependencies {
+    compile 'com.cocoahero.android:geojson:1.0.1@jar'
+}
 repositories{
     maven {
         url "http://indooratlas-ltd.bintray.com/mvn-public"
-    }
-
-
-    dependencies {
-        compile 'com.cocoahero.android:geojson:1.0.1@jar'
     }
 }
