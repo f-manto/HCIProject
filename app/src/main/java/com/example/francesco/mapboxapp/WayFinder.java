@@ -1,5 +1,6 @@
 package com.example.francesco.mapboxapp;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.cocoahero.android.geojson.GeoJSON;
@@ -15,13 +16,13 @@ public class WayFinder {
 
 
 
-    public void printPoints() {
+    public void printPoints(Context applicationContext) {
+
 
         LoadJson string=new LoadJson();
-
         try {
-            GeoJSONObject geoJSON = GeoJSON.parse(string.loadJSONFromAsset());
-            Log.d("nav",geoJSON.getType());
+            GeoJSONObject geoJSON = GeoJSON.parse(string.loadJSONFromAsset(applicationContext));
+            Log.d("navigation",geoJSON.toJSON().toString());
         }
         catch (JSONException e) {
             e.printStackTrace();

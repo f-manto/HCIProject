@@ -1,6 +1,7 @@
 package com.example.francesco.mapboxapp;
 
 import android.Manifest;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -204,13 +206,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onMapReady(MapboxMap mapboxMap) {
+        Point.fromCoordinates(Position.fromCoordinates(41.869912,-87.647903)); // Boston Common Park
+        WayFinder navigation=new WayFinder();
 
-
-        //WayFinder navigation=new WayFinder();
-
-        //navigation.printPoints();
-
-               // Point.fromCoordinates(Position.fromCoordinates(41.869912,-87.647903))) // Boston Common Park
+        navigation.printPoints(getApplicationContext());
 
         this.mapboxMap = mapboxMap;
         IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);

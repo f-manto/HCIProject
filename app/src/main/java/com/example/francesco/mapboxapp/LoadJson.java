@@ -1,7 +1,9 @@
 package com.example.francesco.mapboxapp;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,14 +13,14 @@ import java.nio.channels.FileChannel;
  * Created by pietrodimarco on 11/17/17.
  */
 
-public class LoadJson {
+public class LoadJson extends Fragment {
 
 
 
-    public String loadJSONFromAsset() {
+    public String loadJSONFromAsset(Context applicationContext) {
         String json = null;
         try {
-            InputStream is = AppContext.getAppContext().getAssets().open("app/sampledata/floor1_waypoints.geojson");
+            InputStream is = applicationContext.getAssets().open("floor1_waypoints.geojson");
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
@@ -28,8 +30,10 @@ public class LoadJson {
             ex.printStackTrace();
             return null;
         }
+        Log.d("JSON",json);
         return json;
     }
+
 
 
 }
