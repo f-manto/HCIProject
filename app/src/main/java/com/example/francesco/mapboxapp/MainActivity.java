@@ -63,9 +63,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("myTag", "This is my message");
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -232,4 +234,6 @@ public class MainActivity extends AppCompatActivity
     public void onStatusChanged(String provider, int status, Bundle extras) {
         // N/A
     }
+
+
 }
