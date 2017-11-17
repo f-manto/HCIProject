@@ -1,0 +1,28 @@
+{
+"type": "FeatureCollection",
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "optE": 0, "optW": 0, "optN": 2, "optS": 0, "room": null }, "geometry": { "type": "Point", "coordinates": [ -87.64848573396059805418, 41.86990570411707324183 ] } },
+{ "type": "Feature", "properties": { "id": 2, "optE": 3, "optW": 0, "optN": 0, "optS": 1, "room": null }, "geometry": { "type": "Point", "coordinates": [ -87.64848726029259751158, 41.86999492729307803529 ] } },
+{ "type": "Feature", "properties": { "id": 3, "optE": 0, "optW": 2, "optN": 0, "optS": 4, "room": null }, "geometry": { "type": "Point", "coordinates": [ -87.64795151776648651776, 41.87000345179382065908 ] } },
+{ "type": "Feature", "properties": { "id": 4, "optE": 11, "optW": 5, "optN": 3, "optS": 0, "room": null }, "geometry": { "type": "Point", "coordinates": [ -87.64794999143450127121, 41.86997617338744248627 ] } },
+{ "type": "Feature", "properties": { "id": 5, "optE": 4, "optW": 0, "optN": 0, "optS": 6, "room": null }, "geometry": { "type": "Point", "coordinates": [ -87.64838270655172891566, 41.86996992208433709948 ] } },
+{ "type": "Feature", "properties": { "id": 6, "optE": 7, "optW": 0, "optN": 5, "optS": 0, "room": null }, "geometry": { "type": "Point", "coordinates": [ -87.64837965388778684428, 41.86976419704114249498 ] } },
+{ "type": "Feature", "properties": { "id": 7, "optE": 0, "optW": 6, "optN": 8, "optS": 0, "room": null }, "geometry": { "type": "Point", "coordinates": [ -87.64791946479485318378, 41.8697693117601872359 ] } },
+{ "type": "Feature", "properties": { "id": 8, "optE": 9, "optW": 0, "optN": 0, "optS": 7, "room": null }, "geometry": { "type": "Point", "coordinates": [ -87.64791946479485318378, 41.8697937487455220662 ] } },
+{ "type": "Feature", "properties": { "id": 9, "optE": 0, "optW": 8, "optN": 10, "optS": 0, "room": null }, "geometry": { "type": "Point", "coordinates": [ -87.64789275398516110727, 41.8697937487455220662 ] } },
+{ "type": "Feature", "properties": { "id": 10, "optE": 0, "optW": 12, "optN": 11, "optS": 9, "room": null }, "geometry": { "type": "Point", "coordinates": [ -87.64789275398516110727, 41.86988638188419997732 ] } },
+{ "type": "Feature", "properties": { "id": 11, "optE": 0, "optW": 4, "optN": 0, "optS": 10, "room": null }, "geometry": { "type": "Point", "coordinates": [ -87.64789275398516110727, 41.86997617338744248627 ] } },
+{ "type": "Feature", "properties": { "id": 12, "optE": 10, "optW": 0, "optN": 0, "optS": 0, "room": null }, "geometry": { "type": "Point", "coordinates": [ -87.64820336254373955853, 41.86988297207779652354 ] } },
+{ "type": "Feature", "properties": { "id": 13, "optE": 3, "optW": 2, "optN": 0, "optS": 0, "room": "1003" }, "geometry": { "type": "Point", "coordinates": [ -87.648464365312861446, 41.86999720049338691297 ] } },
+{ "type": "Feature", "properties": { "id": 14, "optE": 3, "optW": 2, "optN": 0, "optS": 0, "room": "1023" }, "geometry": { "type": "Point", "coordinates": [ -87.6483651537339483184, 41.8699983370935129301 ] } },
+{ "type": "Feature", "properties": { "id": 15, "optE": 3, "optW": 2, "optN": 0, "optS": 0, "room": "1033" }, "geometry": { "type": "Point", "coordinates": [ -87.64825678416313792241, 41.87000061029369391008 ] } },
+{ "type": "Feature", "properties": { "id": 16, "optE": 3, "optW": 2, "optN": 0, "optS": 0, "room": "1043" }, "geometry": { "type": "Point", "coordinates": [ -87.64813925660044446886, 41.87000345179382065908 ] } },
+{ "type": "Feature", "properties": { "id": 17, "optE": 3, "optW": 2, "optN": 0, "optS": 0, "room": "1047" }, "geometry": { "type": "Point", "coordinates": [ -87.64807286115916440394, 41.87000402009383037694 ] } },
+{ "type": "Feature", "properties": { "id": 18, "optE": 4, "optW": 5, "optN": 0, "optS": 0, "room": "1024" }, "geometry": { "type": "Point", "coordinates": [ -87.64805759783934036022, 41.86997446848665305197 ] } },
+{ "type": "Feature", "properties": { "id": 19, "optE": 4, "optW": 5, "optN": 0, "optS": 0, "room": "1020" }, "geometry": { "type": "Point", "coordinates": [ -87.64820870470566660515, 41.8699739001863804333 ] } },
+{ "type": "Feature", "properties": { "id": 20, "optE": 4, "optW": 5, "optN": 0, "optS": 0, "room": "1014" }, "geometry": { "type": "Point", "coordinates": [ -87.64835981157202127179, 41.86997162698524732605 ] } },
+{ "type": "Feature", "properties": { "id": 21, "optE": 0, "optW": 0, "optN": 5, "optS": 6, "room": "1054" }, "geometry": { "type": "Point", "coordinates": [ -87.64837812755581580859, 41.86978806572651734541 ] } },
+{ "type": "Feature", "properties": { "id": 22, "optE": 7, "optW": 6, "optN": 0, "optS": 0, "room": "1060" }, "geometry": { "type": "Point", "coordinates": [ -87.6482003098797832763, 41.8697676068538910954 ] } },
+{ "type": "Feature", "properties": { "id": 23, "optE": 7, "optW": 6, "optN": 0, "optS": 0, "room": "1064" }, "geometry": { "type": "Point", "coordinates": [ -87.64804615034947232743, 41.86976988006227173855 ] } }
+]
+}

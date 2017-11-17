@@ -11,14 +11,14 @@ import java.nio.channels.FileChannel;
  * Created by pietrodimarco on 11/17/17.
  */
 
-public class LoadJeason {
+public class LoadJson {
 
 
 
     public String loadJSONFromAsset() {
         String json = null;
         try {
-            InputStream is = AppContext.getAppContext().getAssets().open("file_name.json");
+            InputStream is = AppContext.getAppContext().getAssets().open("app/sampledata/floor1_waypoints.geojson");
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
