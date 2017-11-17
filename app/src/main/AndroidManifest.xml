@@ -32,7 +32,7 @@
             android:value="1cc90d74-2086-47e4-9fc3-b61732841e11"/>
         <meta-data
             android:name="com.indooratlas.android.sdk.API_SECRET"
-            android:value="O8YVtUFGuJSIo+YeHjXHp1gkIN/y95VrRwsVoUe+ecLUezSZYTfUAetjgh6B7/OqwdW6SbqKyIdTHdgKk84+S02Ehdye+xsDhHtnT1b94cog2q1GMQ9RDUN0oZ2quQ==e"/>
+            android:value="O8YVtUFGuJSIo+YeHjXHp1gkIN/y95VrRwsVoUe+ecLUezSZYTfUAetjgh6B7/OqwdW6SbqKyIdTHdgKk84+S02Ehdye+xsDhHtnT1b94cog2q1GMQ9RDUN0oZ2quQ=="/>
 
         <activity
             android:name=".MainActivity"

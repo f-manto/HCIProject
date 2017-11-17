@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity
     private final int CODE_PERMISSIONS=1;
     private MarkerViewOptions marker;
     private IALocationManager mIALocationManager;
+    private MapboxMap mapboxMap;
 
 
     @Override
@@ -87,14 +88,14 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-/*
+
         String[] neededPermissions = {
                 Manifest.permission.CHANGE_WIFI_STATE,
                 Manifest.permission.ACCESS_WIFI_STATE,
                 Manifest.permission.ACCESS_COARSE_LOCATION
         };
         ActivityCompat.requestPermissions( this, neededPermissions, CODE_PERMISSIONS );
-*/
+
 
 
         Mapbox.getInstance(this, "pk.eyJ1IjoiZ3JvdXAzaGNpIiwiYSI6ImNqOXhkZTU0MDB0bnAzM3Bva2JyY2M2Mm8ifQ.wimKY4mWCu4Pr8SIOlR_Qg");
@@ -105,6 +106,8 @@ public class MainActivity extends AppCompatActivity
 
 
         mIALocationManager = IALocationManager.create(this);
+
+
     }
 
     @Override
@@ -185,16 +188,16 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
-        //mIALocationManager.destroy();
+        mIALocationManager.destroy();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mapView.onPause();
-/*        if (mIALocationManager != null) {
+       if (mIALocationManager != null) {
             mIALocationManager.removeLocationUpdates(this);
-        }*/
+        }
 
     }
 
@@ -204,6 +207,7 @@ public class MainActivity extends AppCompatActivity
 
                // Point.fromCoordinates(Position.fromCoordinates(41.869912,-87.647903))) // Boston Common Park
 
+        this.mapboxMap = mapboxMap;
         IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
         Icon icon = iconFactory.fromResource(R.drawable.mapbox_mylocation_icon_default);
         marker = new MarkerViewOptions()
@@ -221,13 +225,23 @@ public class MainActivity extends AppCompatActivity
      * Callback for receiving locations.
      * This is where location updates can be handled by moving markers or the camera.
 */
-
+@Override
     public void onLocationChanged(IALocation location) {
        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-       //
-        // marker.getMarker().setPosition(latLng);
-        marker.getMarker().setPosition(latLng);
+
+
+    Log.d("myTag", "Location updated");
+
+        IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
+        Icon icon = iconFactory.fromResource(R.drawable.mapbox_mylocation_icon_default);
+
+        MarkerViewOptions marker2 = new MarkerViewOptions()
+                .position(new LatLng(location.getLatitude(), location.getLongitude()))
+                .title("Location")
+                .snippet(" ")
+                .icon(icon);
+        mapboxMap.addMarker(marker2);
 
     }
     @Override
