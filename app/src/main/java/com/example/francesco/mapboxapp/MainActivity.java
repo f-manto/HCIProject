@@ -202,6 +202,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(MapboxMap mapboxMap) {
 
+
+        //WayFinder navigation=new WayFinder();
+
+        //navigation.printPoints();
+
                // Point.fromCoordinates(Position.fromCoordinates(41.869912,-87.647903))) // Boston Common Park
 
         IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
