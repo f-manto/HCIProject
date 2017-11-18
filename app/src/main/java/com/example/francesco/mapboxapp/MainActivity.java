@@ -210,6 +210,7 @@ public class MainActivity extends AppCompatActivity
 
         Point.fromCoordinates(Position.fromCoordinates(41.869912,-87.647903)); // Boston Common Park
 
+
         this.mapboxMap = mapboxMap;
         IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
         Icon icon = iconFactory.fromResource(R.drawable.mapbox_mylocation_icon_default);
@@ -219,8 +220,11 @@ public class MainActivity extends AppCompatActivity
                 .snippet("Welcome to you")
                 .icon(icon);
         mapboxMap.addMarker(marker);
+        navigation.startNavigation(3,1060);
 
     }
+
+
 
 
 /*
