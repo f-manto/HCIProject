@@ -31,7 +31,6 @@ public class LoadJson extends Fragment {
             ex.printStackTrace();
             return null;
         }
-        Log.d("JSON",json);
         return json;
     }
 

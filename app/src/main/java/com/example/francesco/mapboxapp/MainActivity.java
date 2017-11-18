@@ -206,9 +206,7 @@ public class MainActivity extends AppCompatActivity
     public void onMapReady(MapboxMap mapboxMap) {
 
 
-        WayFinder navigation=new WayFinder();
-
-        navigation.printPoints(getApplicationContext());
+        WayFinder navigation=new WayFinder(getApplicationContext());
 
         Point.fromCoordinates(Position.fromCoordinates(41.869912,-87.647903)); // Boston Common Park
 
