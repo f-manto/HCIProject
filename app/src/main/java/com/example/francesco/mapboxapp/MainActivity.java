@@ -207,6 +207,8 @@ public class MainActivity extends AppCompatActivity
 
 
         WayFinder navigation=new WayFinder(getApplicationContext());
+        Thread nuovoThread = new Thread(navigation);
+        nuovoThread.start();
 
         Point.fromCoordinates(Position.fromCoordinates(41.869912,-87.647903)); // Boston Common Park
 
@@ -220,7 +222,6 @@ public class MainActivity extends AppCompatActivity
                 .snippet("Welcome to you")
                 .icon(icon);
         mapboxMap.addMarker(marker);
-        navigation.startNavigation(3,1060);
 
     }
 

@@ -1,5 +1,7 @@
 package com.example.francesco.mapboxapp;
 
+import android.util.Log;
+
 import com.cocoahero.android.geojson.Point;
 
 /**
@@ -34,5 +36,9 @@ public class Tag {
 
     public void addFather(Tag iterationNode) {
         this.father=iterationNode;
+    }
+
+    public int getId() {
+        return id;
     }
 }
