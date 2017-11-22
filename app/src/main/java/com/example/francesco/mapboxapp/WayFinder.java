@@ -71,6 +71,7 @@ public class WayFinder implements Runnable{
                         } else
                             frontier.add(futureStates.get(i));
                     }
+
                 }
         }else printSolution(startingPoint,startingTag);
         Log.d("result","path non trovato");
