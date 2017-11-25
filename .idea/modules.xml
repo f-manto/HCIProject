@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/HCIProject.iml" filepath="$PROJECT_DIR$/HCIProject.iml" />
-      <module fileurl="file://C:\Users\Drako\StudioProjects\HCIProjectNew\.idea\HCIProject.iml" filepath="C:\Users\Drako\StudioProjects\HCIProjectNew\.idea\HCIProject.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/HCIProjectNew.iml" filepath="$PROJECT_DIR$/.idea/HCIProjectNew.iml" />
-      <module fileurl="file://C:\Users\Drako\StudioProjects\HCIProjectNew\MapboxApp.iml" filepath="C:\Users\Drako\StudioProjects\HCIProjectNew\MapboxApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MapboxApp.iml" filepath="$PROJECT_DIR$/MapboxApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

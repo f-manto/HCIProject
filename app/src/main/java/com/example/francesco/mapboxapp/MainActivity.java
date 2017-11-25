@@ -3,6 +3,7 @@ package com.example.francesco.mapboxapp;
 import android.Manifest;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,6 +28,7 @@ import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
+import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -148,7 +150,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-       /* if (id == R.id.nav_camera) {
+/*        if (id == R.id.nav_camera) {
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
 
@@ -222,6 +224,12 @@ public class MainActivity extends AppCompatActivity
                 .snippet("Welcome to you")
                 .icon(icon);
         mapboxMap.addMarker(marker);
+
+        mapboxMap.addPolyline(new PolylineOptions()
+                .add(new LatLng(41.869912, -87.647903))
+                .add(new LatLng(41.86995, -87.647903))
+                .color(Color.parseColor("#3bb2d0"))
+                .width(5));
 
     }
 
