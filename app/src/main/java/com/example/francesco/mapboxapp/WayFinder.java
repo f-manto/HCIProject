@@ -8,6 +8,7 @@ import com.cocoahero.android.geojson.FeatureCollection;
 import com.cocoahero.android.geojson.GeoJSON;
 import com.cocoahero.android.geojson.GeoJSONObject;
 import com.cocoahero.android.geojson.Point;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.json.JSONException;
 import org.w3c.dom.Node;
@@ -24,15 +25,22 @@ public class WayFinder implements Runnable{
     ArrayList<Tag> tags;
     ArrayList<Path> possiblePaths;
     Context appContext;
+    int startingPoint;
+    int destRoom;
+    MainActivity main;
+    Tag dest=null;
 
-    public WayFinder(Context applicationContext) {
+    public WayFinder(Context applicationContext, int startingPoint,int destRoom, MainActivity main) {
         this.appContext=applicationContext;
+        this.startingPoint = startingPoint;
+        this.destRoom = destRoom;
+        this.main =main;
     }
 
-    public void startNavigation(int startingPoint,int destRoom) {
+    public void startNavigation() {
 
         Tag startingTag = null;
-        Tag dest=null;
+
         for (int i = 0; i < tags.size(); i++){
             if(tags.get(i).getRoom()==destRoom)
                 dest=tags.get(i);
@@ -78,11 +86,17 @@ public class WayFinder implements Runnable{
     }
 
     private void printSolution(int startingPoint, Tag goal) {
+        ArrayList<LatLng> points = new ArrayList<LatLng>();
+        points.add(new LatLng(dest.point.getPosition().getLatitude(), dest.point.getPosition().getLongitude()));
         while (goal.id!=startingPoint){
+            points.add(new LatLng(goal.point.getPosition().getLatitude(), goal.point.getPosition().getLongitude()));
             Log.d("goal",String.valueOf(goal.id));
             goal=goal.father;
         }
         Log.d("goal",String.valueOf(goal.getId()));
+        points.add(new LatLng(goal.point.getPosition().getLatitude(), goal.point.getPosition().getLongitude()));
+        main.drawPath(points);
+
 
     }
 
@@ -147,6 +161,6 @@ public class WayFinder implements Runnable{
         catch (JSONException e) {
             e.printStackTrace();
         }
-        startNavigation(10,1060);
+        startNavigation();
     }
 }

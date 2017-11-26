@@ -1,10 +1,18 @@
 package com.example.francesco.mapboxapp;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PointF;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -18,10 +26,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 
+import com.google.gson.JsonElement;
 import com.indooratlas.android.sdk.IALocation;
 import com.indooratlas.android.sdk.IALocationListener;
 import com.indooratlas.android.sdk.IALocationManager;
+import com.indooratlas.android.sdk.IALocationRequest;
+import com.indooratlas.android.sdk.IARegion;
+import com.indooratlas.android.sdk.resources.IAResourceManager;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
@@ -33,6 +46,8 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.mapbox.mapboxsdk.style.layers.Filter;
+import com.mapbox.mapboxsdk.style.layers.Property;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
@@ -45,23 +60,30 @@ import com.mapbox.services.commons.models.Position;
 import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
+import static com.mapbox.mapboxsdk.style.layers.Property.VISIBLE;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
         , IALocationListener
-    , OnMapReadyCallback
-        {
+        , OnMapReadyCallback, MapboxMap.OnMapClickListener, LocationListener {
 
     private static final String SOURCE_ID = "com.mapbox.mapboxsdk.style.layers.symbol.source.id";
     private static final String LAYER_ID = "com.mapbox.mapboxsdk.style.layers.symbol.layer.id";
 
     private MapView mapView;
-    private final int CODE_PERMISSIONS=1;
+    private final int CODE_PERMISSIONS = 1;
     private MarkerViewOptions marker;
     private IALocationManager mIALocationManager;
+    private IAResourceManager mResourceManager;
     private MapboxMap mapboxMap;
+    private boolean mShowIndoorLocation = false;
 
+    private Marker featureMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,10 +116,10 @@ public class MainActivity extends AppCompatActivity
         String[] neededPermissions = {
                 Manifest.permission.CHANGE_WIFI_STATE,
                 Manifest.permission.ACCESS_WIFI_STATE,
-                Manifest.permission.ACCESS_COARSE_LOCATION
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
         };
-        ActivityCompat.requestPermissions( this, neededPermissions, CODE_PERMISSIONS );
-
+        ActivityCompat.requestPermissions(this, neededPermissions, CODE_PERMISSIONS);
 
 
         Mapbox.getInstance(this, "pk.eyJ1IjoiZ3JvdXAzaGNpIiwiYSI6ImNqOXhkZTU0MDB0bnAzM3Bva2JyY2M2Mm8ifQ.wimKY4mWCu4Pr8SIOlR_Qg");
@@ -108,6 +130,8 @@ public class MainActivity extends AppCompatActivity
 
 
         mIALocationManager = IALocationManager.create(this);
+        mResourceManager = IAResourceManager.create(this);
+        startListeningPlatformLocations();
 
 
     }
@@ -184,6 +208,8 @@ public class MainActivity extends AppCompatActivity
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        mIALocationManager.requestLocationUpdates(IALocationRequest.create(), this);
+        mIALocationManager.registerRegionListener(mRegionListener);
     }
 
     @Override
@@ -197,8 +223,10 @@ public class MainActivity extends AppCompatActivity
     protected void onPause() {
         super.onPause();
         mapView.onPause();
-       if (mIALocationManager != null) {
+        if (mIALocationManager != null) {
+            // unregister location & region changes
             mIALocationManager.removeLocationUpdates(this);
+            mIALocationManager.registerRegionListener(mRegionListener);
         }
 
     }
@@ -206,13 +234,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onMapReady(MapboxMap mapboxMap) {
-
-
-        WayFinder navigation=new WayFinder(getApplicationContext());
-        Thread nuovoThread = new Thread(navigation);
-        nuovoThread.start();
-
-        Point.fromCoordinates(Position.fromCoordinates(41.869912,-87.647903)); // Boston Common Park
 
 
         this.mapboxMap = mapboxMap;
@@ -225,31 +246,34 @@ public class MainActivity extends AppCompatActivity
                 .icon(icon);
         mapboxMap.addMarker(marker);
 
-        mapboxMap.addPolyline(new PolylineOptions()
-                .add(new LatLng(41.869912, -87.647903))
-                .add(new LatLng(41.86995, -87.647903))
-                .color(Color.parseColor("#3bb2d0"))
-                .width(5));
+        getWPAndDrawPath(12, 1003);
+
+        floorVisibility(1, NONE);
+        floorVisibility(2, VISIBLE);
+
+        mapboxMap.setOnMapClickListener(this);
+
 
     }
 
 
-
-
-/*
-    *
-     * Callback for receiving locations.
-     * This is where location updates can be handled by moving markers or the camera.
-*/
-@Override
+    /*
+        *
+         * Callback for receiving locations.
+         * This is where location updates can be handled by moving markers or the camera.
+    */
+    @Override
     public void onLocationChanged(IALocation location) {
-       LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
+        Log.d("myTag", "Location updated");
 
+        final LatLng center = new LatLng(location.getLatitude(), location.getLongitude());
 
-    Log.d("myTag", "Location updated");
+        if (mShowIndoorLocation) {
+            showLocationCircle(center, location.getAccuracy());
+        }
 
-        IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
+        /*IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
         Icon icon = iconFactory.fromResource(R.drawable.mapbox_mylocation_icon_default);
 
         MarkerViewOptions marker2 = new MarkerViewOptions()
@@ -257,13 +281,161 @@ public class MainActivity extends AppCompatActivity
                 .title("Location")
                 .snippet(" ")
                 .icon(icon);
-        mapboxMap.addMarker(marker2);
+        mapboxMap.addMarker(marker2);*/
 
     }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if(mapboxMap == null)
+            return;
+        if (!mShowIndoorLocation) {
+            Log.d(TAG, "new LocationService location received with coordinates: " + location.getLatitude()
+                    + "," + location.getLongitude());
+
+            showLocationCircle(
+                    new LatLng(location.getLatitude(), location.getLongitude()),
+                    location.getAccuracy());
+        }
+
+    }
+
+
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
         // N/A
     }
 
+    @Override
+    public void onProviderEnabled(String s) {
 
+    }
+
+
+    @Override
+    public void onProviderDisabled(String s) {
+
+    }
+
+    public void showLocationOnMap(boolean show) {
+
+
+    }
+
+    public void getWPAndDrawPath(int startingPoint, int destRoom) {
+
+        WayFinder navigation = new WayFinder(getApplicationContext(), startingPoint, destRoom, this);
+        Thread nuovoThread = new Thread(navigation);
+        nuovoThread.start();
+
+
+    }
+
+    public void drawPath(Iterable<LatLng> points) {
+
+        PolylineOptions path = new PolylineOptions()
+                .addAll(points)
+                .color(Color.parseColor("#3bb2d0"))
+                .width(5);
+
+        mapboxMap.addPolyline(path);
+
+    }
+
+    public void floorVisibility(int floor, String vis) {
+
+
+        mapboxMap.getLayer("FLOOR" + floor + "_rooms").setProperties(visibility(vis));
+        mapboxMap.getLayer("FLOOR" + floor + "_walls").setProperties(visibility(vis));
+        mapboxMap.getLayer("FLOOR" + floor + "_labels").setProperties(visibility(vis));
+
+    }
+
+    @Override
+    public void onMapClick(@NonNull LatLng point) {
+        if (featureMarker != null) {
+            mapboxMap.removeMarker(featureMarker);
+        }
+
+        final PointF pixel = mapboxMap.getProjection().toScreenLocation(point);
+        List<Feature> features = mapboxMap.queryRenderedFeatures(pixel);
+
+        if (features.size() > 0) {
+            for (Feature feature : features) {
+                if (feature.getProperties() != null) {
+                    for (Map.Entry<String, JsonElement> entry : feature.getProperties().entrySet()) {
+                        if (entry.getKey().equals("Room")) {
+                            featureMarker = mapboxMap.addMarker(new MarkerViewOptions()
+                                    .position(point)
+                                    .title("Room: " + entry.getValue())
+                            );
+                            mapboxMap.selectMarker(featureMarker);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        featureMarker = mapboxMap.addMarker(new MarkerViewOptions()
+                .position(point)
+                .snippet("hello")
+        );
+
+
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
+
+    private String TAG = "IA";
+
+    private IARegion.Listener mRegionListener = new IARegion.Listener() {
+        @Override
+        public void onEnterRegion(IARegion region) {
+            if (region.getType() == IARegion.TYPE_FLOOR_PLAN) {
+                final String newId = region.getId();
+
+
+                mShowIndoorLocation = true;
+            }
+        }
+
+        @Override
+        public void onExitRegion(IARegion region) {
+
+
+            mShowIndoorLocation = false;
+
+        }
+
+    };
+
+
+    private void startListeningPlatformLocations() {
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+        }
+    }
+
+
+    private void showLocationCircle(LatLng latLng, float accuracy) {
+
+        marker.getMarker().getPosition().setLatitude(latLng.getLatitude());
+        marker.getMarker().getPosition().setLongitude(latLng.getLongitude());
+
+    }
 }
