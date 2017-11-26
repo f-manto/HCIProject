@@ -20,7 +20,9 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main" />
+    <include
+        android:id="@+id/include2"
+        layout="@layout/content_main" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -30,5 +32,29 @@
         android:layout_margin="@dimen/fab_margin"
         app:backgroundTint="@color/colorPrimary"
         app:srcCompat="@android:drawable/ic_menu_mylocation" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginHorizontal="10dp"
+        android:clickable="true"
+        app:backgroundTint="@android:color/background_light"
+        app:layout_anchor="@+id/include2"
+        app:layout_anchorGravity="right|center"
+        app:srcCompat="@drawable/ic_one" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingActionButton4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="clip_vertical"
+        android:clickable="true"
+        app:backgroundTint="@android:color/background_light"
+        app:layout_anchor="@+id/floatingActionButton"
+        app:layout_anchorGravity="top|center"
+        app:srcCompat="@drawable/ic_two" />
+
 
 </android.support.design.widget.CoordinatorLayout>
