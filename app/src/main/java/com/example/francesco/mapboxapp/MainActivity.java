@@ -180,10 +180,35 @@ public class MainActivity extends AppCompatActivity
                 // Code here executes on main thread after user presses button
                 int start = getStartingPoint(currentLocation);
                 getWPAndDrawPath(start, 1043);
+            }
+        });
 
+        final Button floor1Button = findViewById(R.id.floor1Button);
+        final Button floor2Button = findViewById(R.id.floor2Button);
+
+        floor1Button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Code here executes on main thread after user presses button
+                floorVisibility(1,VISIBLE);
+                floorVisibility(2,NONE);
+                floor1Button.setBackgroundColor(Color.GRAY);
+                floor2Button.setBackgroundColor(Color.WHITE);
+            }
+        });
+
+        floor2Button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Code here executes on main thread after user presses button
+                floorVisibility(2,VISIBLE);
+                floorVisibility(1,NONE);
+                floor2Button.setBackgroundColor(Color.GRAY);
+                floor1Button.setBackgroundColor(Color.WHITE);
 
             }
         });
+
+
+
 
 
 
@@ -434,11 +459,7 @@ public class MainActivity extends AppCompatActivity
                 button.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         // Perform action on click
-
                         getWPAndDrawPath(12, Integer.valueOf(marker.getSnippet()));
-
-
-
                     }
                 });
 
@@ -474,6 +495,9 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        Button floor1Button = findViewById(R.id.floor1Button);
+        floor1Button.performClick();
+
 
     }
 
@@ -492,6 +516,7 @@ public class MainActivity extends AppCompatActivity
 
         if (mShowIndoorLocation) {
             showLocationCircle(center, location.getAccuracy());
+
         }
 
         /*IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
