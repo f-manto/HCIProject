@@ -37,6 +37,10 @@ public class WayFinder implements Runnable{
         this.main =main;
     }
 
+    public WayFinder(Context applicationContext) {
+        this.appContext=applicationContext;
+    }
+
     public void startNavigation() {
 
         Tag startingTag = null;
@@ -162,5 +166,38 @@ public class WayFinder implements Runnable{
             e.printStackTrace();
         }
         startNavigation();
+    }
+
+    public int getStartingPoint(LatLng latLng){
+        ArrayList<Tag> tags = new ArrayList<Tag>();
+        int room;
+        LoadJson string=new LoadJson();
+        try {
+            FeatureCollection geoJSON = (FeatureCollection) GeoJSON.parse(string.loadJSONFromAsset(appContext));
+            for (int i = 0; i < geoJSON.getFeatures().size(); i++) {
+                if(geoJSON.getFeatures().get(i).getProperties().isNull("room"))
+                    room=0;
+                else
+                    room=geoJSON.getFeatures().get(i).getProperties().getInt("room");
+                tags.add(new Tag(geoJSON.getFeatures().get(i).getProperties().getInt("id"), geoJSON.getFeatures().get(i).getProperties().getInt("optE"), geoJSON.getFeatures().get(i).getProperties().getInt("optW"), geoJSON.getFeatures().get(i).getProperties().getInt("optS"), geoJSON.getFeatures().get(i).getProperties().getInt("optN"), room, (Point) geoJSON.getFeatures().get(i).getGeometry()));
+            }
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        double lat = latLng.getLatitude();
+        double lng = latLng.getLongitude();
+        double minDist = Double.MAX_VALUE;
+        Tag nearestTag = null;
+        for(Tag tag : tags){
+            double distance = Math.sqrt(Math.pow((lat-tag.point.getPosition().getLatitude()), 2) + Math.pow((lng-tag.point.getPosition().getLongitude()), 2));
+            if(distance<minDist){
+                minDist = distance;
+                nearestTag = tag;
+            }
+
+        }
+        return nearestTag.getId();
     }
 }

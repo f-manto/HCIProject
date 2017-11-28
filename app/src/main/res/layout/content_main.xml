@@ -21,7 +21,7 @@
             mapbox:mapbox_cameraTargetLat="41.869817"
             mapbox:mapbox_cameraTargetLng="-87.647870"
             mapbox:mapbox_styleUrl="mapbox://styles/group3hci/cj9xdf9746ktj2rry7msiunw3"
-            mapbox:mapbox_cameraZoom="16" />
+            mapbox:mapbox_cameraZoom="18" />
 
     </RelativeLayout>
 
