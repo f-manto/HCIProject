@@ -2,6 +2,7 @@ package com.example.francesco.mapboxapp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -13,6 +14,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -26,7 +28,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.gson.JsonElement;
 import com.indooratlas.android.sdk.IALocation;
@@ -41,6 +46,7 @@ import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
+import com.mapbox.mapboxsdk.annotations.PolygonOptions;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -52,6 +58,7 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.style.sources.Source;
+import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigation;
 import com.mapbox.services.commons.geojson.Feature;
 import com.mapbox.services.commons.geojson.FeatureCollection;
 import com.mapbox.services.commons.geojson.Point;
@@ -65,6 +72,8 @@ import java.util.Map;
 import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
 import static com.mapbox.mapboxsdk.style.layers.Property.VISIBLE;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 
 
 public class MainActivity extends AppCompatActivity
@@ -84,6 +93,9 @@ public class MainActivity extends AppCompatActivity
     private boolean mShowIndoorLocation = false;
 
     private Marker featureMarker;
+    private PolylineOptions path;
+
+    private LatLng currentLocation = new LatLng(41.869912, -87.647903);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,14 +106,14 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+      /*  FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -132,6 +144,21 @@ public class MainActivity extends AppCompatActivity
         mIALocationManager = IALocationManager.create(this);
         mResourceManager = IAResourceManager.create(this);
         startListeningPlatformLocations();
+
+        MapboxNavigation navigation = new MapboxNavigation(this, "pk.eyJ1IjoiZ3JvdXAzaGNpIiwiYSI6ImNqOXhkZTU0MDB0bnAzM3Bva2JyY2M2Mm8ifQ.wimKY4mWCu4Pr8SIOlR_Qg");
+
+
+        FloatingActionButton locateButton = (FloatingActionButton) findViewById(R.id.locateButton);
+        locateButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Code here executes on main thread after user presses button
+                int start = getStartingPoint(currentLocation);
+                getWPAndDrawPath(start, 1043);
+
+
+            }
+        });
+
 
 
     }
@@ -244,14 +271,81 @@ public class MainActivity extends AppCompatActivity
                 .title("Location")
                 .snippet("Welcome to you")
                 .icon(icon);
+
+
         mapboxMap.addMarker(marker);
 
-        getWPAndDrawPath(12, 1003);
 
-        floorVisibility(1, NONE);
-        floorVisibility(2, VISIBLE);
+
+
+
+        getWPAndDrawPath(21, 1033);
+
+        floorVisibility(2, NONE);
+        floorVisibility(1, VISIBLE);
 
         mapboxMap.setOnMapClickListener(this);
+
+        mapboxMap.setInfoWindowAdapter(new MapboxMap.InfoWindowAdapter() {
+            @Nullable
+            @Override
+            public View getInfoWindow(@NonNull final Marker marker) {
+
+                // The info window layout is created dynamically, parent is the info window
+                // container
+                LinearLayout parent = new LinearLayout(MainActivity.this);
+                parent.setLayoutParams(new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                parent.setOrientation(LinearLayout.VERTICAL);
+
+                TextView title = new TextView(MainActivity.this);
+                title.setText(marker.getSnippet());
+
+                Button button = new Button(MainActivity.this);
+                button.setText("go");
+                button.setPadding(2,2,2,2);
+                button.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        // Perform action on click
+
+                        getWPAndDrawPath(12, Integer.valueOf(marker.getSnippet()));
+
+
+
+                    }
+                });
+
+ /*               // Depending on the marker latitude, the correct image source is used. If you
+                // have many markers using different images, extending Marker and
+                // baseMarkerOptions, adding additional options such as the image, might be
+                // a better choice.
+                ImageView countryFlagImage = new ImageView(CustomInfoWindowActivity.this);
+
+                if (TextUtils.equals(marker.getTitle(), getString(R.string.custom_window_marker_title_spain))) {
+                    countryFlagImage.setImageDrawable(ContextCompat.getDrawable(
+                            CustomInfoWindowActivity.this, R.drawable.flag_of_spain));
+                } else if (TextUtils.equals(marker.getTitle(), getString(R.string.custom_window_marker_title_egypt))) {
+                    countryFlagImage.setImageDrawable(ContextCompat.getDrawable(
+                            CustomInfoWindowActivity.this, R.drawable.flag_of_egypt));
+                } else {
+                    // By default all markers without a matching latitude will use the
+                    // Germany flag
+                    countryFlagImage.setImageDrawable(ContextCompat.getDrawable(
+                            CustomInfoWindowActivity.this, R.drawable.flag_of_germany));
+                }
+
+                // Set the size of the image
+                countryFlagImage.setLayoutParams(new android.view.ViewGroup.LayoutParams(150, 100));
+*/
+                // add the image view to the parent layout
+                parent.addView(title);
+                parent.addView(button);
+                parent.setBackgroundColor(Color.WHITE);
+
+
+                return parent;
+            }
+        });
 
 
     }
@@ -322,6 +416,14 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    public int getStartingPoint(LatLng latLng){
+
+        WayFinder wayfinder = new WayFinder(this);
+
+        return wayfinder.getStartingPoint(latLng);
+
+    }
+
     public void getWPAndDrawPath(int startingPoint, int destRoom) {
 
         WayFinder navigation = new WayFinder(getApplicationContext(), startingPoint, destRoom, this);
@@ -332,8 +434,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void drawPath(Iterable<LatLng> points) {
+        if (path!=null){
+            mapboxMap.removePolyline(path.getPolyline());
+        }
 
-        PolylineOptions path = new PolylineOptions()
+        path = new PolylineOptions()
                 .addAll(points)
                 .color(Color.parseColor("#3bb2d0"))
                 .width(5);
@@ -367,7 +472,8 @@ public class MainActivity extends AppCompatActivity
                         if (entry.getKey().equals("Room")) {
                             featureMarker = mapboxMap.addMarker(new MarkerViewOptions()
                                     .position(point)
-                                    .title("Room: " + entry.getValue())
+                                    .title("Room")
+                                    .snippet(String.valueOf(entry.getValue()))
                             );
                             mapboxMap.selectMarker(featureMarker);
                             return;
@@ -436,6 +542,35 @@ public class MainActivity extends AppCompatActivity
 
         marker.getMarker().getPosition().setLatitude(latLng.getLatitude());
         marker.getMarker().getPosition().setLongitude(latLng.getLongitude());
+        //drawCircle(mapboxMap, latLng, Color.parseColor("#3bb2d0"),10);
+        currentLocation = latLng;
 
+
+    }
+
+    private PolygonOptions generatePerimeter(LatLng centerCoordinates, double radiusInKilometers, int numberOfSides) {
+        List<LatLng> positions = new ArrayList<>();
+        double distanceX = radiusInKilometers / (111.319 * Math.cos(centerCoordinates.getLatitude() * Math.PI / 180));
+        double distanceY = radiusInKilometers / 110.574;
+
+        double slice = (2 * Math.PI) / numberOfSides;
+
+        double theta;
+        double x;
+        double y;
+        LatLng position;
+        for (int i = 0; i < numberOfSides; ++i) {
+            theta = i * slice;
+            x = distanceX * Math.cos(theta);
+            y = distanceY * Math.sin(theta);
+
+            position = new LatLng(centerCoordinates.getLatitude() + y,
+                    centerCoordinates.getLongitude() + x);
+            positions.add(position);
+        }
+        return new PolygonOptions()
+                .addAll(positions)
+                .fillColor(Color.BLUE)
+                .alpha(0.4f);
     }
 }
