@@ -1,8 +1,12 @@
 package com.example.francesco.mapboxapp;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.location.Location;
@@ -12,6 +16,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
@@ -39,6 +44,7 @@ import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.annotations.PolygonOptions;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
@@ -46,16 +52,38 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.mapbox.mapboxsdk.style.layers.Filter;
+import com.mapbox.mapboxsdk.style.layers.Property;
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.mapbox.mapboxsdk.style.sources.Source;
 import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigation;
 import com.mapbox.services.commons.geojson.Feature;
+import com.mapbox.services.commons.geojson.FeatureCollection;
+import com.mapbox.services.commons.geojson.Point;
+import com.mapbox.services.commons.models.Position;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.List;
 
 import com.example.francesco.mapboxapp.data.BaseItem;
 import com.example.francesco.mapboxapp.data.CustomDataProvider;
@@ -68,6 +96,8 @@ import pl.openrnd.multilevellistview.OnItemClickListener;
 import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
 import static com.mapbox.mapboxsdk.style.layers.Property.VISIBLE;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 
 
 public class MainActivity extends AppCompatActivity
@@ -149,11 +179,36 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View v) {
                 // Code here executes on main thread after user presses button
                 int start = getStartingPoint(currentLocation);
-                getWPAndDrawPath(start, "1043");
+                getWPAndDrawPath(start, 1043);
+            }
+        });
 
+        final Button floor1Button = findViewById(R.id.floor1Button);
+        final Button floor2Button = findViewById(R.id.floor2Button);
+
+        floor1Button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Code here executes on main thread after user presses button
+                floorVisibility(1,VISIBLE);
+                floorVisibility(2,NONE);
+                floor1Button.setBackgroundColor(Color.GRAY);
+                floor2Button.setBackgroundColor(Color.WHITE);
+            }
+        });
+
+        floor2Button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Code here executes on main thread after user presses button
+                floorVisibility(2,VISIBLE);
+                floorVisibility(1,NONE);
+                floor2Button.setBackgroundColor(Color.GRAY);
+                floor1Button.setBackgroundColor(Color.WHITE);
 
             }
         });
+
+
+
 
 
 
@@ -376,7 +431,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
-        getWPAndDrawPath(21, "1033");
+        getWPAndDrawPath(21, 1033);
 
         floorVisibility(2, NONE);
         floorVisibility(1, VISIBLE);
@@ -404,11 +459,7 @@ public class MainActivity extends AppCompatActivity
                 button.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         // Perform action on click
-
-                        getWPAndDrawPath(12, String.valueOf(marker.getSnippet()));
-
-
-
+                        getWPAndDrawPath(12, Integer.valueOf(marker.getSnippet()));
                     }
                 });
 
@@ -444,6 +495,9 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        Button floor1Button = findViewById(R.id.floor1Button);
+        floor1Button.performClick();
+
 
     }
 
@@ -462,6 +516,7 @@ public class MainActivity extends AppCompatActivity
 
         if (mShowIndoorLocation) {
             showLocationCircle(center, location.getAccuracy());
+
         }
 
         /*IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
@@ -521,7 +576,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void getWPAndDrawPath(int startingPoint, String destRoom) {
+    public void getWPAndDrawPath(int startingPoint, int destRoom) {
 
         WayFinder navigation = new WayFinder(getApplicationContext(), startingPoint, destRoom, this);
         Thread nuovoThread = new Thread(navigation);
@@ -607,6 +662,8 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public void onExitRegion(IARegion region) {
+
+
             mShowIndoorLocation = false;
 
         }

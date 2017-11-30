@@ -33,28 +33,26 @@
         app:backgroundTint="@color/colorPrimary"
         app:srcCompat="@android:drawable/ic_menu_mylocation" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="56dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:layout_marginHorizontal="10dp"
-        android:clickable="true"
-        app:backgroundTint="@android:color/background_light"
+        android:orientation="vertical"
         app:layout_anchor="@+id/include2"
         app:layout_anchorGravity="right|center"
-        app:srcCompat="@drawable/ic_one" />
+        tools:layout_editor_absoluteX="328dp">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="clip_vertical"
-        android:clickable="true"
-        app:backgroundTint="@android:color/background_light"
-        app:layout_anchor="@+id/floatingActionButton"
-        app:layout_anchorGravity="top|center"
-        app:srcCompat="@drawable/ic_two" />
+        <Button
+            android:id="@+id/floor2Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="2" />
+
+        <Button
+            android:id="@+id/floor1Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="1" />
+    </LinearLayout>
 
 
 </android.support.design.widget.CoordinatorLayout>
