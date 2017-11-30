@@ -26,19 +26,22 @@ public class WayFinder implements Runnable{
     ArrayList<Path> possiblePaths;
     Context appContext;
     int startingPoint;
-    int destRoom;
+    String destRoom;
     MainActivity main;
     Tag dest=null;
 
-    public WayFinder(Context applicationContext, int startingPoint,int destRoom, MainActivity main) {
+    public WayFinder(Context applicationContext, int startingPoint,String destRoom, MainActivity main) {
         this.appContext=applicationContext;
         this.startingPoint = startingPoint;
         this.destRoom = destRoom;
         this.main =main;
     }
 
-    public WayFinder(Context applicationContext) {
+    public WayFinder(Context context, int startingPoint, String destRoom, Context applicationContext) {
         this.appContext=applicationContext;
+    }
+
+    public WayFinder(MainActivity mainActivity) {
     }
 
     public void startNavigation() {
@@ -46,7 +49,7 @@ public class WayFinder implements Runnable{
         Tag startingTag = null;
 
         for (int i = 0; i < tags.size(); i++){
-            if(tags.get(i).getRoom()==destRoom)
+            if(tags.get(i).getRoom().equals(destRoom))
                 dest=tags.get(i);
         }
 
@@ -150,15 +153,15 @@ public class WayFinder implements Runnable{
     @Override
     public void run() {
         tags = new ArrayList<>();
-        int room;
+        String room;
         LoadJson string=new LoadJson();
         try {
             FeatureCollection geoJSON = (FeatureCollection) GeoJSON.parse(string.loadJSONFromAsset(appContext));
             for (int i = 0; i < geoJSON.getFeatures().size(); i++) {
                 if(geoJSON.getFeatures().get(i).getProperties().isNull("room"))
-                    room=0;
+                    room=null;
                 else
-                    room=geoJSON.getFeatures().get(i).getProperties().getInt("room");
+                    room= (String) geoJSON.getFeatures().get(i).getProperties().get("room");
                 tags.add(new Tag(geoJSON.getFeatures().get(i).getProperties().getInt("id"), geoJSON.getFeatures().get(i).getProperties().getInt("optE"), geoJSON.getFeatures().get(i).getProperties().getInt("optW"), geoJSON.getFeatures().get(i).getProperties().getInt("optS"), geoJSON.getFeatures().get(i).getProperties().getInt("optN"), room, (Point) geoJSON.getFeatures().get(i).getGeometry()));
             }
         }
@@ -170,15 +173,15 @@ public class WayFinder implements Runnable{
 
     public int getStartingPoint(LatLng latLng){
         ArrayList<Tag> tags = new ArrayList<Tag>();
-        int room;
+        String room;
         LoadJson string=new LoadJson();
         try {
             FeatureCollection geoJSON = (FeatureCollection) GeoJSON.parse(string.loadJSONFromAsset(appContext));
             for (int i = 0; i < geoJSON.getFeatures().size(); i++) {
                 if(geoJSON.getFeatures().get(i).getProperties().isNull("room"))
-                    room=0;
+                    room=null;
                 else
-                    room=geoJSON.getFeatures().get(i).getProperties().getInt("room");
+                    room= (String) geoJSON.getFeatures().get(i).getProperties().get("room");
                 tags.add(new Tag(geoJSON.getFeatures().get(i).getProperties().getInt("id"), geoJSON.getFeatures().get(i).getProperties().getInt("optE"), geoJSON.getFeatures().get(i).getProperties().getInt("optW"), geoJSON.getFeatures().get(i).getProperties().getInt("optS"), geoJSON.getFeatures().get(i).getProperties().getInt("optN"), room, (Point) geoJSON.getFeatures().get(i).getGeometry()));
             }
         }

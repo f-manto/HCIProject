@@ -1,7 +1,5 @@
 package com.example.francesco.mapboxapp;
 
-import android.util.Log;
-
 import com.cocoahero.android.geojson.Point;
 
 /**
@@ -14,12 +12,12 @@ public class Tag {
     int optW;
     int optS;
     int optN;
-    int room;
+    String room;
     Point point;
     Tag father;
 
 
-    public Tag( int id, int optE, int optW, int optS, int optN,int room, Point point) {
+    public Tag(int id, int optE, int optW, int optS, int optN, String room, Point point) {
         this.id=id;
         this.optE=optE;
         this.optN=optN;
@@ -29,7 +27,7 @@ public class Tag {
         this.point=point;
     }
 
-    public int getRoom() {
+    public String getRoom() {
         return room;
     }
 
