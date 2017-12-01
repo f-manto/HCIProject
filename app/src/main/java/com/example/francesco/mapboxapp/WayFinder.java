@@ -41,7 +41,8 @@ public class WayFinder implements Runnable{
         this.appContext=applicationContext;
     }
 
-    public WayFinder(MainActivity mainActivity) {
+    public WayFinder(Context applicationContext) {
+        this.appContext=applicationContext;
     }
 
     public void startNavigation() {
@@ -159,15 +160,18 @@ public class WayFinder implements Runnable{
             FeatureCollection geoJSON = (FeatureCollection) GeoJSON.parse(string.loadJSONFromAsset(appContext));
             for (int i = 0; i < geoJSON.getFeatures().size(); i++) {
                 if(geoJSON.getFeatures().get(i).getProperties().isNull("room"))
-                    room=null;
-                else
-                    room= (String) geoJSON.getFeatures().get(i).getProperties().get("room");
+                    room="";
+                else{
+                    room= geoJSON.getFeatures().get(i).getProperties().getString("room");
+                }
+
                 tags.add(new Tag(geoJSON.getFeatures().get(i).getProperties().getInt("id"), geoJSON.getFeatures().get(i).getProperties().getInt("optE"), geoJSON.getFeatures().get(i).getProperties().getInt("optW"), geoJSON.getFeatures().get(i).getProperties().getInt("optS"), geoJSON.getFeatures().get(i).getProperties().getInt("optN"), room, (Point) geoJSON.getFeatures().get(i).getGeometry()));
             }
         }
         catch (JSONException e) {
             e.printStackTrace();
         }
+
         startNavigation();
     }
 
@@ -181,7 +185,7 @@ public class WayFinder implements Runnable{
                 if(geoJSON.getFeatures().get(i).getProperties().isNull("room"))
                     room=null;
                 else
-                    room= (String) geoJSON.getFeatures().get(i).getProperties().get("room");
+                    room= geoJSON.getFeatures().get(i).getProperties().getString("room");
                 tags.add(new Tag(geoJSON.getFeatures().get(i).getProperties().getInt("id"), geoJSON.getFeatures().get(i).getProperties().getInt("optE"), geoJSON.getFeatures().get(i).getProperties().getInt("optW"), geoJSON.getFeatures().get(i).getProperties().getInt("optS"), geoJSON.getFeatures().get(i).getProperties().getInt("optN"), room, (Point) geoJSON.getFeatures().get(i).getGeometry()));
             }
         }
