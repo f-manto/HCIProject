@@ -459,6 +459,7 @@ public class MainActivity extends AppCompatActivity
                 button.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         // Perform action on click
+                        Log.d("click:",String.valueOf(marker.getSnippet()));
                         getWPAndDrawPath(12, String.valueOf(marker.getSnippet()));
                     }
                 });
@@ -577,7 +578,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void getWPAndDrawPath(int startingPoint, String destRoom) {
-
         WayFinder navigation = new WayFinder(getApplicationContext(), startingPoint, destRoom, this);
         Thread nuovoThread = new Thread(navigation);
         nuovoThread.start();

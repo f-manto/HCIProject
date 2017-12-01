@@ -37,10 +37,6 @@ public class WayFinder implements Runnable{
         this.main =main;
     }
 
-    public WayFinder(Context context, int startingPoint, String destRoom, Context applicationContext) {
-        this.appContext=applicationContext;
-    }
-
     public WayFinder(Context applicationContext) {
         this.appContext=applicationContext;
     }
@@ -48,18 +44,20 @@ public class WayFinder implements Runnable{
     public void startNavigation() {
 
         Tag startingTag = null;
-
         for (int i = 0; i < tags.size(); i++){
             if(tags.get(i).getRoom().equals(destRoom))
+                Log.d("clicked: ",tags.get(i).getRoom() );
                 dest=tags.get(i);
         }
+
+
 
         for (int i = 0; i < tags.size(); i++){
             if (tags.get(i).getId() == startingPoint)
                 startingTag = tags.get(i);
         }
 
-
+        Log.d("clicked: ", String.valueOf(dest));
 
         //the frontier represent the nodes that have to be visited
         LinkedList<Tag> frontier = new LinkedList<>();
@@ -183,7 +181,7 @@ public class WayFinder implements Runnable{
             FeatureCollection geoJSON = (FeatureCollection) GeoJSON.parse(string.loadJSONFromAsset(appContext));
             for (int i = 0; i < geoJSON.getFeatures().size(); i++) {
                 if(geoJSON.getFeatures().get(i).getProperties().isNull("room"))
-                    room=null;
+                    room="";
                 else
                     room= geoJSON.getFeatures().get(i).getProperties().getString("room");
                 tags.add(new Tag(geoJSON.getFeatures().get(i).getProperties().getInt("id"), geoJSON.getFeatures().get(i).getProperties().getInt("optE"), geoJSON.getFeatures().get(i).getProperties().getInt("optW"), geoJSON.getFeatures().get(i).getProperties().getInt("optS"), geoJSON.getFeatures().get(i).getProperties().getInt("optN"), room, (Point) geoJSON.getFeatures().get(i).getGeometry()));
