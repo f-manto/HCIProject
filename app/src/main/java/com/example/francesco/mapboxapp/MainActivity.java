@@ -129,8 +129,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         Log.d("myTag", "This is my message");
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
 
       /*  FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -144,7 +142,7 @@ public class MainActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -186,9 +184,9 @@ public class MainActivity extends AppCompatActivity
 
         final Button floor1Button = findViewById(R.id.floor1Button);
         final Button floor2Button = findViewById(R.id.floor2Button);
-        //LinearLayout barLayour=findViewById(R.id.searchBar);
+        LinearLayout barLayour=findViewById(R.id.searchBar);
+        FloatingSearchView search=findViewById(R.id.floating_search_view);
 
-        //barLayour.addView(new FloatingSearchView((this.getApplicationContext())));
 
         floor1Button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
