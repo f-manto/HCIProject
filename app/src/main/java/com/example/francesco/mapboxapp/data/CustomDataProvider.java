@@ -1,5 +1,7 @@
 package com.example.francesco.mapboxapp.data;
 
+import com.example.francesco.mapboxapp.MainActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,13 +22,13 @@ public class CustomDataProvider {
 
         List<BaseItem> rootMenu = new ArrayList<>();
 
-        /*
-        * ITEM = TANPA CHILD
-        * GROUPITEM = DENGAN CHILD
-        * */
+
+
+
 
         rootMenu.add(new GroupItem("Favorites"));
         rootMenu.add(new GroupItem("Recent"));
+        rootMenu.add(new Item("Restrooms"));
         rootMenu.add(new Item("Settings"));
 
         return rootMenu;
@@ -74,6 +76,8 @@ public class CustomDataProvider {
     private static List<BaseItem> getListFavourites(){
 
         List<BaseItem> list = new ArrayList<>();
+
+
 
         // Setiap membuat groupItem harus di set levelnya
         /*GroupItem groupItem = new GroupItem("GROUP 1");

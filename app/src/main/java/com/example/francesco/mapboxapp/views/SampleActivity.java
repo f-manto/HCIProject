@@ -1,7 +1,12 @@
 package com.example.francesco.mapboxapp.views;
 
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -12,6 +17,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import com.example.francesco.mapboxapp.ListViewAndroid;
 import com.example.francesco.mapboxapp.data.BaseItem;
 import com.example.francesco.mapboxapp.data.DataProvider;
 import pl.openrnd.multilevellistview.ItemInfo;
@@ -32,7 +38,11 @@ public class SampleActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
         confViews();
+
     }
 
     private void confViews() {
@@ -85,7 +95,8 @@ public class SampleActivity extends Activity {
 
         private void showItemDescription(Object object, ItemInfo itemInfo) {
             StringBuilder builder = new StringBuilder("\"");
-            builder.append(((BaseItem) object).getName());
+            String name = ((BaseItem) object).getName();
+            builder.append(name);
             builder.append("\" clicked!\n");
             builder.append(getItemInfoDsc(itemInfo));
 

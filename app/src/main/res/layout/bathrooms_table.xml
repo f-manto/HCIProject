@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <TableRow>
+
+        <TextView
+            android:layout_column="1"
+            android:padding="10dip"
+            android:paddingStart="50dp"
+            android:text="Name" />
+
+        <TextView
+            android:layout_column="2"
+            android:padding="10dip"
+            android:text="Gender" />
+
+        <TextView
+            android:layout_column="3"
+            android:padding="10dip"
+            android:text="Distance" />
+
+        <TextView
+            android:layout_column="4"
+            android:padding="10dip"
+            android:text="Availability" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:paddingStart="50dp"
+            android:layout_column="1"
+            android:padding="10dip"
+            android:text="BF1" />
+
+        <TextView
+            android:layout_column="2"
+            android:padding="10dip"
+            android:text="W" />
+
+        <TextView
+            android:layout_column="3"
+            android:padding="10dip"
+            android:text="15m" />
+
+        <TextView
+            android:layout_column="4"
+            android:padding="10dip"
+            android:text="green" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:paddingStart="50dp"
+            android:layout_column="1"
+            android:padding="10dip"
+            android:text="BM2" />
+
+        <TextView
+            android:layout_column="2"
+            android:padding="10dip"
+            android:text="M" />
+
+        <TextView
+            android:layout_column="3"
+            android:padding="10dip"
+            android:text="37m" />
+
+        <TextView
+            android:layout_column="4"
+            android:padding="10dip"
+            android:text="yellow" />
+    </TableRow>
+</TableLayout>
