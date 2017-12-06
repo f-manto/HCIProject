@@ -464,28 +464,6 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
 
- /*               // Depending on the marker latitude, the correct image source is used. If you
-                // have many markers using different images, extending Marker and
-                // baseMarkerOptions, adding additional options such as the image, might be
-                // a better choice.
-                ImageView countryFlagImage = new ImageView(CustomInfoWindowActivity.this);
-
-                if (TextUtils.equals(marker.getTitle(), getString(R.string.custom_window_marker_title_spain))) {
-                    countryFlagImage.setImageDrawable(ContextCompat.getDrawable(
-                            CustomInfoWindowActivity.this, R.drawable.flag_of_spain));
-                } else if (TextUtils.equals(marker.getTitle(), getString(R.string.custom_window_marker_title_egypt))) {
-                    countryFlagImage.setImageDrawable(ContextCompat.getDrawable(
-                            CustomInfoWindowActivity.this, R.drawable.flag_of_egypt));
-                } else {
-                    // By default all markers without a matching latitude will use the
-                    // Germany flag
-                    countryFlagImage.setImageDrawable(ContextCompat.getDrawable(
-                            CustomInfoWindowActivity.this, R.drawable.flag_of_germany));
-                }
-
-                // Set the size of the image
-                countryFlagImage.setLayoutParams(new android.view.ViewGroup.LayoutParams(150, 100));
-*/
                 // add the image view to the parent layout
                 parent.addView(title);
                 parent.addView(button);
@@ -695,7 +673,7 @@ public class MainActivity extends AppCompatActivity
         marker.getMarker().getPosition().setLatitude(latLng.getLatitude());
         marker.getMarker().getPosition().setLongitude(latLng.getLongitude());
         //drawCircle(mapboxMap, latLng, Color.parseColor("#3bb2d0"),10);
-        currentLocation = latLng;
+
 
 
     }
