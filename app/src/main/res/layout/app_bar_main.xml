@@ -44,6 +44,7 @@
         android:id="@+id/floorButtons"
         android:layout_width="63dp"
         android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
         android:orientation="vertical"
         android:visibility="visible"
         app:layout_anchor="@+id/include2"
@@ -132,12 +133,13 @@
         app:layout_anchorGravity="top|end">
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/primary"
+            android:id="@+id/navigateButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
             android:layout_margin="@dimen/fab_margin"
-            android:src="@android:drawable/ic_delete"/>
+            android:src="@drawable/ic_navigation"
+            app:backgroundTint="@color/dark_gray" />
     </LinearLayout>
 
 

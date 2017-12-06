@@ -125,11 +125,15 @@ public class MainActivity extends AppCompatActivity
     private boolean mShowIndoorLocation = false;
 
     private Marker featureMarker;
+    private int featureMarkerFloor = 0;
 
     private PolylineOptions path;
     private ArrayList<LatLng> floor1_points;
     private ArrayList<LatLng> floor2_points;
     private boolean isPathDisplayed = false;
+
+
+
 
 
     private LatLng currentLocation = new LatLng(41.869912, -87.647903);
@@ -238,7 +242,7 @@ public class MainActivity extends AppCompatActivity
         mBottomSheetBehavior1.setPeekHeight(300);
         mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-        sheetbutton = (FloatingActionButton) findViewById(R.id.primary);
+        sheetbutton = (FloatingActionButton) findViewById(R.id.navigateButton);
         sheetbutton.setVisibility(View.GONE);
         floorButtons = (LinearLayout) findViewById(R.id.floorButtons);
 
@@ -262,20 +266,20 @@ public class MainActivity extends AppCompatActivity
             }
         });*/
 
-        mBottomSheetBehavior1.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+      mBottomSheetBehavior1.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     sheetbutton.setVisibility(View.VISIBLE);
-                    floorButtons.setVisibility(View.INVISIBLE);
+
                 }
                 else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     sheetbutton.setVisibility(View.VISIBLE);
-                    floorButtons.setVisibility(View.INVISIBLE);
+
                 }
                 else if (newState == BottomSheetBehavior.STATE_HIDDEN) {
                     sheetbutton.setVisibility(View.GONE);
-                    floorButtons.setVisibility(View.VISIBLE);
+
                 }
             }
 
@@ -697,6 +701,14 @@ public class MainActivity extends AppCompatActivity
         mapboxMap.getLayer("FLOOR" + floor + "_labels").setProperties(visibility(vis));
 
     }
+    public void floorVisibility3D(int floor, String vis) {
+
+
+        mapboxMap.getLayer("FLOOR" + floor + "_rooms").setProperties(visibility(vis));
+        mapboxMap.getLayer("FLOOR" + floor + "_walls").setProperties(visibility(vis));
+        mapboxMap.getLayer("FLOOR" + floor + "_labels").setProperties(visibility(vis));
+
+    }
 
     @Override
     public void onMapClick(@NonNull LatLng point) {
@@ -717,8 +729,9 @@ public class MainActivity extends AppCompatActivity
                                     .title("Room")
                                     .snippet(String.valueOf(entry.getValue()))
                             );
+                            featureMarkerFloor = displayedFloor;
                             //mapboxMap.selectMarker(featureMarker);
-                            showBottomSheet(String.valueOf(entry.getValue()));
+                            showBottomSheet(entry);
                             showPathFromCurrentLocation(String.valueOf(entry.getValue()));
                             return;
                         }
@@ -734,14 +747,14 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void showBottomSheet(String room) {
+    private void showBottomSheet(Map.Entry<String, JsonElement> entry) {
         View bottomSheet = findViewById(R.id.sheet1);
         mBottomSheetBehavior1 = BottomSheetBehavior.from(bottomSheet);
         if(mBottomSheetBehavior1.getState() != BottomSheetBehavior.STATE_COLLAPSED) {
             mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
             sheetbutton.setVisibility(View.VISIBLE);
-            floorButtons.setVisibility(View.INVISIBLE);
+
         }
 
     }
@@ -880,6 +893,7 @@ public class MainActivity extends AppCompatActivity
             displayedFloor = 2;
             points = floor2_points;
         }
+        mapboxMap.removeAnnotations();
         if(isPathDisplayed){
             if (path!=null){
                 mapboxMap.removePolyline(path.getPolyline());
@@ -891,6 +905,21 @@ public class MainActivity extends AppCompatActivity
             mapboxMap.addPolyline(path);
 
         }
+        if (featureMarkerFloor != displayedFloor){
+            if (featureMarker != null) {
+                mapboxMap.removeMarker(featureMarker);
+            }
+        }else{
+            if (featureMarker != null) {
+
+                featureMarker = mapboxMap.addMarker(new MarkerViewOptions().position(featureMarker.getPosition()).title(featureMarker.getTitle()));
+
+            }
+        }
+
+    }
+
+    private void enterNavigationMode(){
 
     }
 }
