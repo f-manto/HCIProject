@@ -89,17 +89,25 @@ public class WayFinder implements Runnable{
     }
 
     private void printSolution(int startingPoint, Tag goal) {
-        ArrayList<LatLng> points = new ArrayList<LatLng>();
-        points.add(new LatLng(dest.point.getPosition().getLatitude(), dest.point.getPosition().getLongitude()));
+        ArrayList<LatLng> points1 = new ArrayList<LatLng>();
+        ArrayList<LatLng> points2 = new ArrayList<LatLng>();
+        if(dest.floor==1)
+            points1.add(new LatLng(dest.point.getPosition().getLatitude(), dest.point.getPosition().getLongitude()));
+        else
+            points2.add(new LatLng(dest.point.getPosition().getLatitude(), dest.point.getPosition().getLongitude()));
         while (goal.id!=startingPoint){
-            points.add(new LatLng(goal.point.getPosition().getLatitude(), goal.point.getPosition().getLongitude()));
-            Log.d("goal node:",String.valueOf(goal.id));
-            Log.d("goal floor:",String.valueOf(goal.getFloor()));
+            if(dest.floor==1)
+                points1.add(new LatLng(goal.point.getPosition().getLatitude(), goal.point.getPosition().getLongitude()));
+            else
+                points2.add(new LatLng(dest.point.getPosition().getLatitude(), goal.point.getPosition().getLongitude()));
+
             goal=goal.father;
         }
-        Log.d("goal",String.valueOf(goal.getId()));
-        points.add(new LatLng(goal.point.getPosition().getLatitude(), goal.point.getPosition().getLongitude()));
-        main.drawPath(points);
+        if(dest.floor==1)
+            points1.add(new LatLng(goal.point.getPosition().getLatitude(), goal.point.getPosition().getLongitude()));
+        else
+            points2.add(new LatLng(goal.point.getPosition().getLatitude(), goal.point.getPosition().getLongitude()));
+        main.drawPath(points1,points2);
 
 
     }

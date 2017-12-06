@@ -45,6 +45,10 @@ dependencies {
 dependencies {
     compile 'com.indooratlas.android:indooratlas-android-sdk:2.5.4'
 
+
+}
+dependencies {
+    compile 'com.github.arimorty:floatingsearchview:2.1.1'
 }
 dependencies {
     compile 'com.cocoahero.android:geojson:1.0.1@jar'

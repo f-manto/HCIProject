@@ -33,6 +33,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
 import com.google.gson.JsonElement;
 import com.indooratlas.android.sdk.IALocation;
 import com.indooratlas.android.sdk.IALocationListener;
@@ -185,6 +186,9 @@ public class MainActivity extends AppCompatActivity
 
         final Button floor1Button = findViewById(R.id.floor1Button);
         final Button floor2Button = findViewById(R.id.floor2Button);
+        //LinearLayout barLayour=findViewById(R.id.searchBar);
+
+        //barLayour.addView(new FloatingSearchView((this.getApplicationContext())));
 
         floor1Button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -563,17 +567,17 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void drawPath(Iterable<LatLng> points) {
+    public void drawPath(ArrayList<LatLng> points1, Iterable<LatLng> points2) {
         if (path!=null){
             mapboxMap.removePolyline(path.getPolyline());
         }
 
-        path = new PolylineOptions()
+       /* path = new PolylineOptions()
                 .addAll(points)
                 .color(Color.parseColor("#3bb2d0"))
-                .width(5);
+                .width(5);*/
 
-        mapboxMap.addPolyline(path);
+       /* mapboxMap.addPolyline(path);*/
 
     }
 
