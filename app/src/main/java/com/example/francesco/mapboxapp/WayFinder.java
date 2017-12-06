@@ -42,9 +42,10 @@ public class WayFinder implements Runnable{
 
         Tag startingTag = null;
         for (int i = 0; i < tags.size(); i++){
-            if(tags.get(i).getRoom().equals(destRoom))
+            if(tags.get(i).getRoom().equals(destRoom)){
                 Log.d("clicked: ",tags.get(i).getRoom() );
                 dest=tags.get(i);
+            }
         }
 
 
@@ -95,18 +96,21 @@ public class WayFinder implements Runnable{
             points1.add(new LatLng(dest.point.getPosition().getLatitude(), dest.point.getPosition().getLongitude()));
         else
             points2.add(new LatLng(dest.point.getPosition().getLatitude(), dest.point.getPosition().getLongitude()));
+        Log.d("result", String.valueOf(goal.id));
         while (goal.id!=startingPoint){
-            if(dest.floor==1)
+            Log.d("result", String.valueOf(goal.id));
+            if(goal.floor==1)
                 points1.add(new LatLng(goal.point.getPosition().getLatitude(), goal.point.getPosition().getLongitude()));
             else
-                points2.add(new LatLng(dest.point.getPosition().getLatitude(), goal.point.getPosition().getLongitude()));
+                points2.add(new LatLng(goal.point.getPosition().getLatitude(), goal.point.getPosition().getLongitude()));
 
             goal=goal.father;
         }
-        if(dest.floor==1)
+        if(goal.floor==1)
             points1.add(new LatLng(goal.point.getPosition().getLatitude(), goal.point.getPosition().getLongitude()));
         else
             points2.add(new LatLng(goal.point.getPosition().getLatitude(), goal.point.getPosition().getLongitude()));
+
         main.drawPath(points1,points2);
 
 
@@ -162,8 +166,10 @@ public class WayFinder implements Runnable{
 
 
     private boolean goalState(Tag child, Tag destRoom) {
-        if(destRoom.optE==child.getId() || destRoom.optN==child.getId() || destRoom.optS==child.getId() || destRoom.optW==child.getId())
+        if(destRoom.optE==child.getId() || destRoom.optN==child.getId() || destRoom.optS==child.getId() || destRoom.optW==child.getId()){
+            Log.d("goalstate", String.valueOf(child.id) + destRoom.getRoom());
             return true;
+    }
         else return false;
     }
 
@@ -192,7 +198,7 @@ public class WayFinder implements Runnable{
         startNavigation();
     }
 
-    public int getStartingPoint(LatLng latLng){
+    public int getStartingPoint(LatLng latLng, int floor){
         ArrayList<Tag> tags = new ArrayList<Tag>();
         String room;
         LoadJson string=new LoadJson();
@@ -216,7 +222,7 @@ public class WayFinder implements Runnable{
         Tag nearestTag = null;
         for(Tag tag : tags){
             double distance = Math.sqrt(Math.pow((lat-tag.point.getPosition().getLatitude()), 2) + Math.pow((lng-tag.point.getPosition().getLongitude()), 2));
-            if(distance<minDist){
+            if(distance<minDist && tag.floor == floor){
                 minDist = distance;
                 nearestTag = tag;
             }

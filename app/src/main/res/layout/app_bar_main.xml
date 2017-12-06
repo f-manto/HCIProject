@@ -6,52 +6,47 @@
     android:layout_height="match_parent"
     tools:context="com.example.francesco.mapboxapp.MainActivity">
 
-    <LinearLayout
-        android:id="@+id/searchBar"
-        android:layout_width="match_parent"
-        android:layout_height="513dp"
-        android:gravity="top|bottom"
-        android:orientation="vertical"
-        app:layout_anchor="@+id/include2"
-        app:layout_anchorGravity="bottom"
-        tools:layout_editor_absoluteY="54dp">
-
-    </LinearLayout>
-
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-    </android.support.design.widget.AppBarLayout>
-
     <include
         android:id="@+id/include2"
         layout="@layout/content_main"
         app:layout_anchor="@+id/appBarLayout"
         app:layout_anchorGravity="bottom|center" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/locateButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/searchBar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="@color/colorPrimary"
-        app:srcCompat="@android:drawable/ic_menu_mylocation" />
+        android:gravity="top|bottom"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_anchor="@+id/include2"
+        app:layout_anchorGravity="bottom"
+        tools:layout_editor_absoluteY="54dp">
+
+        <com.arlib.floatingsearchview.FloatingSearchView
+            android:id="@+id/floating_search_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:floatingSearch_close_search_on_keyboard_dismiss="true"
+            app:floatingSearch_leftActionMode="showHamburger"
+            app:floatingSearch_menu="@menu/menu_main"
+            app:floatingSearch_searchBarMarginLeft="2dp"
+            app:floatingSearch_searchBarMarginRight="2dp"
+            app:floatingSearch_searchBarMarginTop="2dp"
+            app:floatingSearch_searchHint="Search..."
+            app:floatingSearch_showSearchKey="false"
+            app:floatingSearch_suggestionsListAnimDuration="250" />
+
+    </LinearLayout>
+
 
     <LinearLayout
+        android:id="@+id/floorButtons"
         android:layout_width="63dp"
         android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
         android:orientation="vertical"
+        android:visibility="visible"
         app:layout_anchor="@+id/include2"
         app:layout_anchorGravity="right|center"
         tools:layout_editor_absoluteX="321dp">
@@ -68,6 +63,100 @@
             android:layout_height="wrap_content"
             android:text="1" />
     </LinearLayout>
+
+
+
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/sheet1"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="@android:color/white"
+        android:clipToPadding="true"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+        app:layout_anchorGravity="bottom">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:paddingLeft="16dp">
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/mapbox_info_bg_selector" />
+
+                <TextView
+                    android:id="@+id/bottomSheet_Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:padding="16dp"
+                    android:text="sheet_p1"
+                    android:textAllCaps="true"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="16dp"
+                android:text="Floor: "
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="16dp"
+                android:text="Building: ERF"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+
+    <LinearLayout
+        android:id="@+id/primary_wrap"
+        android:layout_width="wrap_content"
+        android:layout_height="88dp"
+        app:layout_anchor="@id/sheet1"
+        app:layout_anchorGravity="top|end">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/navigateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_navigation"
+            app:backgroundTint="@color/dark_gray" />
+    </LinearLayout>
+
+
+    <!-- Pin secondary fab in the top of the extended primary -->
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/locateButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="16dp"
+        app:srcCompat="@android:drawable/ic_menu_mylocation"
+        app:backgroundTint="@color/colorPrimary"
+        app:layout_anchor="@+id/primary_wrap"
+        app:layout_anchorGravity="top|end"/>
+
+
+
 
 
 </android.support.design.widget.CoordinatorLayout>
