@@ -15,9 +15,11 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.text.Layout;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -49,6 +51,9 @@ import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.annotations.PolygonOptions;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.constants.MyBearingTracking;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -109,6 +114,8 @@ public class MainActivity extends AppCompatActivity
     private static final String SOURCE_ID = "com.mapbox.mapboxsdk.style.layers.symbol.source.id";
     private static final String LAYER_ID = "com.mapbox.mapboxsdk.style.layers.symbol.layer.id";
 
+    private BottomSheetBehavior mBottomSheetBehavior1;
+
     private MapView mapView;
     private final int CODE_PERMISSIONS = 1;
     private MarkerViewOptions marker;
@@ -118,11 +125,25 @@ public class MainActivity extends AppCompatActivity
     private boolean mShowIndoorLocation = false;
 
     private Marker featureMarker;
+
     private PolylineOptions path;
+    private ArrayList<LatLng> floor1_points;
+    private ArrayList<LatLng> floor2_points;
+    private boolean isPathDisplayed = false;
+
 
     private LatLng currentLocation = new LatLng(41.869912, -87.647903);
+    private int currentFloor = 1;
 
     private MultiLevelListView multiLevelListView;
+    private int displayedFloor = 1 ;
+    private boolean isLocating = false;
+
+
+
+    private FloatingActionButton sheetbutton;
+
+    private LinearLayout floorButtons;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,7 +189,7 @@ public class MainActivity extends AppCompatActivity
 
         mIALocationManager = IALocationManager.create(this);
         mResourceManager = IAResourceManager.create(this);
-        startListeningPlatformLocations();
+
 
         MapboxNavigation navigation = new MapboxNavigation(this, "pk.eyJ1IjoiZ3JvdXAzaGNpIiwiYSI6ImNqOXhkZTU0MDB0bnAzM3Bva2JyY2M2Mm8ifQ.wimKY4mWCu4Pr8SIOlR_Qg");
 
@@ -177,8 +198,11 @@ public class MainActivity extends AppCompatActivity
         locateButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Code here executes on main thread after user presses button
-                int start = getStartingPoint(currentLocation);
-                getWPAndDrawPath(start, "1043");
+                if (!isLocating){
+                    startLocating();
+                }else{
+                    focusOnLocation();
+                }
             }
         });
 
@@ -190,31 +214,99 @@ public class MainActivity extends AppCompatActivity
 
         floor1Button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // Code here executes on main thread after user presses button
-                floorVisibility(1,VISIBLE);
-                floorVisibility(2,NONE);
-                floor1Button.setBackgroundColor(Color.GRAY);
-                floor2Button.setBackgroundColor(Color.WHITE);
+                displayFloor(1);
             }
         });
 
         floor2Button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // Code here executes on main thread after user presses button
-                floorVisibility(2,VISIBLE);
-                floorVisibility(1,NONE);
-                floor2Button.setBackgroundColor(Color.GRAY);
-                floor1Button.setBackgroundColor(Color.WHITE);
-
+                displayFloor(2);
             }
         });
-
 
 
 
 
 
         confMenu();
+
+
+
+        View bottomSheet = findViewById(R.id.sheet1);
+        mBottomSheetBehavior1 = BottomSheetBehavior.from(bottomSheet);
+        mBottomSheetBehavior1.setHideable(true);
+        mBottomSheetBehavior1.setPeekHeight(300);
+        mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+        sheetbutton = (FloatingActionButton) findViewById(R.id.primary);
+        sheetbutton.setVisibility(View.GONE);
+        floorButtons = (LinearLayout) findViewById(R.id.floorButtons);
+
+
+/*        final Button mButton1 = (Button) findViewById(R.id.button_1);
+        mButton1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mBottomSheetBehavior1.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+                    mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    mButton1.setText("collapse");
+                    sheetbutton.setVisibility(View.VISIBLE);
+                    floorButtons.setVisibility(View.INVISIBLE);
+                }
+                else {
+                    mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_HIDDEN);
+                    mButton1.setText("Button 1");
+                    sheetbutton.setVisibility(View.GONE);
+                    floorButtons.setVisibility(View.VISIBLE);
+                }
+            }
+        });*/
+
+        mBottomSheetBehavior1.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    sheetbutton.setVisibility(View.VISIBLE);
+                    floorButtons.setVisibility(View.INVISIBLE);
+                }
+                else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    sheetbutton.setVisibility(View.VISIBLE);
+                    floorButtons.setVisibility(View.INVISIBLE);
+                }
+                else if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    sheetbutton.setVisibility(View.GONE);
+                    floorButtons.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onSlide(View bottomSheet, float slideOffset) {
+            }
+        });
+
+
+    }
+
+    private void focusOnLocation() {
+        CameraPosition position = new CameraPosition.Builder()
+                .target(currentLocation) // Sets the new camera position
+                .zoom(20) // Sets the zoom
+                .build(); // Creates a CameraPosition from the builder
+
+        mapboxMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(position), 1000);
+
+    }
+
+    private void startLocating() {
+
+        Toast toast = Toast.makeText(getApplicationContext(), "Localization Enabled", Toast.LENGTH_LONG);
+        toast.show();
+        isLocating = true;
+
+        mIALocationManager.requestLocationUpdates(IALocationRequest.create(), this);
+        startListeningPlatformLocations();
+
     }
 
     @Override
@@ -389,7 +481,7 @@ public class MainActivity extends AppCompatActivity
     public void onResume() {
         super.onResume();
         mapView.onResume();
-        mIALocationManager.requestLocationUpdates(IALocationRequest.create(), this);
+
         mIALocationManager.registerRegionListener(mRegionListener);
     }
 
@@ -419,7 +511,7 @@ public class MainActivity extends AppCompatActivity
 
         this.mapboxMap = mapboxMap;
         IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
-        Icon icon = iconFactory.fromResource(R.drawable.mapbox_mylocation_icon_default);
+        Icon icon = iconFactory.fromResource(R.drawable.mapbox_mylocation_icon_bearing);
         marker = new MarkerViewOptions()
                 .position(new LatLng(41.869912, -87.647903))
                 .title("Location")
@@ -428,19 +520,19 @@ public class MainActivity extends AppCompatActivity
 
 
         mapboxMap.addMarker(marker);
+        marker.getMarker().setVisible(isLocating);
 
 
 
 
 
-        getWPAndDrawPath(21, "1033");
 
-        floorVisibility(2, NONE);
-        floorVisibility(1, VISIBLE);
+
+
 
         mapboxMap.setOnMapClickListener(this);
 
-        mapboxMap.setInfoWindowAdapter(new MapboxMap.InfoWindowAdapter() {
+        /*mapboxMap.setInfoWindowAdapter(new MapboxMap.InfoWindowAdapter() {
             @Nullable
             @Override
             public View getInfoWindow(@NonNull final Marker marker) {
@@ -475,10 +567,11 @@ public class MainActivity extends AppCompatActivity
                 return parent;
             }
         });
+        */
 
-        Button floor1Button = findViewById(R.id.floor1Button);
-        floor1Button.performClick();
+        displayFloor(1);
 
+        getWPAndDrawPath(1, "2068");
 
     }
 
@@ -496,9 +589,11 @@ public class MainActivity extends AppCompatActivity
         final LatLng center = new LatLng(location.getLatitude(), location.getLongitude());
 
         if (mShowIndoorLocation) {
-            showLocationCircle(center, location.getAccuracy());
+            showLocationCircle(center, location.getAccuracy(), location.getBearing());
+            currentFloor = location.getFloorLevel();
 
         }
+
 
         /*IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
         Icon icon = iconFactory.fromResource(R.drawable.mapbox_mylocation_icon_default);
@@ -512,6 +607,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+
     @Override
     public void onLocationChanged(Location location) {
         if(mapboxMap == null)
@@ -522,8 +618,9 @@ public class MainActivity extends AppCompatActivity
 
             showLocationCircle(
                     new LatLng(location.getLatitude(), location.getLongitude()),
-                    location.getAccuracy());
+                    location.getAccuracy(),location.getBearing() );
         }
+
 
     }
 
@@ -549,11 +646,11 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public int getStartingPoint(LatLng latLng){
+    public int getStartingPoint(LatLng latLng, int floor){
 
         WayFinder wayfinder = new WayFinder(getApplicationContext());
 
-        return wayfinder.getStartingPoint(latLng);
+        return wayfinder.getStartingPoint(latLng, floor);
 
     }
 
@@ -565,17 +662,30 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void drawPath(ArrayList<LatLng> points1, Iterable<LatLng> points2) {
+    public void drawPath(ArrayList<LatLng> points1, ArrayList<LatLng> points2) {
         if (path!=null){
             mapboxMap.removePolyline(path.getPolyline());
         }
+        floor1_points = points1;
+        floor2_points = points2;
+        isPathDisplayed = true;
+        if (displayedFloor == 1){
+            path = new PolylineOptions()
+                    .addAll(points1)
+                    .color(Color.parseColor("#3bb2d0"))
+                    .width(5);
+        }
+        if (displayedFloor == 2){
+            path = new PolylineOptions()
+                    .addAll(points2)
+                    .color(Color.parseColor("#3bb2d0"))
+                    .width(5);
+        }
 
-       /* path = new PolylineOptions()
-                .addAll(points)
-                .color(Color.parseColor("#3bb2d0"))
-                .width(5);*/
 
-       /* mapboxMap.addPolyline(path);*/
+
+        mapboxMap.addPolyline(path);
+
 
     }
 
@@ -607,7 +717,9 @@ public class MainActivity extends AppCompatActivity
                                     .title("Room")
                                     .snippet(String.valueOf(entry.getValue()))
                             );
-                            mapboxMap.selectMarker(featureMarker);
+                            //mapboxMap.selectMarker(featureMarker);
+                            showBottomSheet(String.valueOf(entry.getValue()));
+                            showPathFromCurrentLocation(String.valueOf(entry.getValue()));
                             return;
                         }
                     }
@@ -622,6 +734,29 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    private void showBottomSheet(String room) {
+        View bottomSheet = findViewById(R.id.sheet1);
+        mBottomSheetBehavior1 = BottomSheetBehavior.from(bottomSheet);
+        if(mBottomSheetBehavior1.getState() != BottomSheetBehavior.STATE_COLLAPSED) {
+            mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+            sheetbutton.setVisibility(View.VISIBLE);
+            floorButtons.setVisibility(View.INVISIBLE);
+        }
+
+    }
+
+    private void showPathFromCurrentLocation(String room){
+        if(isLocating){
+            int start = getStartingPoint(currentLocation, currentFloor);
+            getWPAndDrawPath(start,room);
+
+        }else{
+            Toast toast = Toast.makeText(getApplicationContext(), "Enable localization to show the path", Toast.LENGTH_LONG);
+            toast.show();
+        }
+    }
+
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
 
@@ -634,6 +769,7 @@ public class MainActivity extends AppCompatActivity
         public void onEnterRegion(IARegion region) {
             if (region.getType() == IARegion.TYPE_FLOOR_PLAN) {
                 final String newId = region.getId();
+
 
 
                 mShowIndoorLocation = true;
@@ -670,11 +806,29 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private void showLocationCircle(LatLng latLng, float accuracy) {
+    private void showLocationCircle(LatLng latLng, float accuracy, float bearing) {
 
+        if(!marker.isVisible())
+            marker.visible(true);
         marker.getMarker().getPosition().setLatitude(latLng.getLatitude());
         marker.getMarker().getPosition().setLongitude(latLng.getLongitude());
+        marker.getMarker().setRotation(bearing);
         //drawCircle(mapboxMap, latLng, Color.parseColor("#3bb2d0"),10);
+
+        Log.d(TAG, "new bearing:" + String.valueOf(bearing));
+        CameraPosition position = new CameraPosition.Builder()
+                .target(latLng) // Sets the new camera position
+                .zoom(17) // Sets the zoom
+                .bearing(bearing) // Rotate the camera
+                .tilt(30) // Set the camera tilt
+                .build(); // Creates a CameraPosition from the builder
+
+        mapboxMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(position), 1000);
+        currentLocation = latLng;
+
+
+
 
 
 
@@ -704,5 +858,39 @@ public class MainActivity extends AppCompatActivity
                 .addAll(positions)
                 .fillColor(Color.BLUE)
                 .alpha(0.4f);
+    }
+
+    private void displayFloor(int floor){
+        Button floor1Button = findViewById(R.id.floor1Button);
+        Button floor2Button = findViewById(R.id.floor2Button);
+        ArrayList<LatLng> points=null;
+        if(floor == 1){
+            floorVisibility(1,VISIBLE);
+            floorVisibility(2,NONE);
+            floor1Button.setBackgroundColor(Color.GRAY);
+            floor2Button.setBackgroundColor(Color.WHITE);
+            displayedFloor = 1;
+            points = floor1_points;
+        }
+        if (floor == 2){
+            floorVisibility(2,VISIBLE);
+            floorVisibility(1,NONE);
+            floor2Button.setBackgroundColor(Color.GRAY);
+            floor1Button.setBackgroundColor(Color.WHITE);
+            displayedFloor = 2;
+            points = floor2_points;
+        }
+        if(isPathDisplayed){
+            if (path!=null){
+                mapboxMap.removePolyline(path.getPolyline());
+            }
+            path = new PolylineOptions()
+                    .addAll(points)
+                    .color(Color.parseColor("#3bb2d0"))
+                    .width(5);
+            mapboxMap.addPolyline(path);
+
+        }
+
     }
 }
