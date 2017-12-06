@@ -459,8 +459,8 @@ public class MainActivity extends AppCompatActivity
                 button.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         // Perform action on click
-                        Log.d("click:",String.valueOf(marker.getSnippet()));
-                        getWPAndDrawPath(12, String.valueOf(marker.getSnippet()));
+                        Log.d("click:",marker.getSnippet());
+                        getWPAndDrawPath(12, marker.getSnippet());
                     }
                 });
 

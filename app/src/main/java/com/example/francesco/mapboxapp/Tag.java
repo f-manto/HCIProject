@@ -12,13 +12,17 @@ public class Tag {
     int optW;
     int optS;
     int optN;
+    int floor, optUp, optDown;
     String room;
     Point point;
     Tag father;
 
 
-    public Tag(int id, int optE, int optW, int optS, int optN, String room, Point point) {
+    public Tag(int id, int optE, int optW, int optS, int optN, int floor, int optUp, int optDown, String room, Point point) {
         this.id=id;
+        this.floor=floor;
+        this.optDown=optDown;
+        this.optUp=optUp;
         this.optE=optE;
         this.optN=optN;
         this.optS=optS;
@@ -38,5 +42,9 @@ public class Tag {
 
     public int getId() {
         return id;
+    }
+
+    public int getFloor() {
+        return floor;
     }
 }

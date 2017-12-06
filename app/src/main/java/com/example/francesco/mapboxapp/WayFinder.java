@@ -3,15 +3,12 @@ package com.example.francesco.mapboxapp;
 import android.content.Context;
 import android.util.Log;
 
-import com.cocoahero.android.geojson.Feature;
 import com.cocoahero.android.geojson.FeatureCollection;
 import com.cocoahero.android.geojson.GeoJSON;
-import com.cocoahero.android.geojson.GeoJSONObject;
 import com.cocoahero.android.geojson.Point;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.json.JSONException;
-import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -96,7 +93,8 @@ public class WayFinder implements Runnable{
         points.add(new LatLng(dest.point.getPosition().getLatitude(), dest.point.getPosition().getLongitude()));
         while (goal.id!=startingPoint){
             points.add(new LatLng(goal.point.getPosition().getLatitude(), goal.point.getPosition().getLongitude()));
-            Log.d("goal",String.valueOf(goal.id));
+            Log.d("goal node:",String.valueOf(goal.id));
+            Log.d("goal floor:",String.valueOf(goal.getFloor()));
             goal=goal.father;
         }
         Log.d("goal",String.valueOf(goal.getId()));
@@ -115,7 +113,6 @@ public class WayFinder implements Runnable{
                     tags.get(i).addFather(iterationNode);
                     fut.add(tags.get(i));
                 }
-
         }
         if(iterationNode.optS!=0 && !alreadyVis.contains(iterationNode.optS)){
             for (int i=0;i<tags.size();i++)
@@ -134,6 +131,20 @@ public class WayFinder implements Runnable{
         if(iterationNode.optE!=0 && !alreadyVis.contains(iterationNode.optE)){
             for (int i=0;i<tags.size();i++)
                 if(tags.get(i).id==iterationNode.optE) {
+                    tags.get(i).addFather(iterationNode);
+                    fut.add(tags.get(i));
+                }
+        }
+        if(iterationNode.optUp!=0 && !alreadyVis.contains(iterationNode.optUp)){
+            for (int i=0;i<tags.size();i++)
+                if(tags.get(i).id==iterationNode.optUp){
+                    tags.get(i).addFather(iterationNode);
+                    fut.add(tags.get(i));
+                }
+        }
+        if(iterationNode.optDown!=0 && !alreadyVis.contains(iterationNode.optDown)){
+            for (int i=0;i<tags.size();i++)
+                if(tags.get(i).id==iterationNode.optDown) {
                     tags.get(i).addFather(iterationNode);
                     fut.add(tags.get(i));
                 }
@@ -163,7 +174,7 @@ public class WayFinder implements Runnable{
                     room= geoJSON.getFeatures().get(i).getProperties().getString("room");
                 }
 
-                tags.add(new Tag(geoJSON.getFeatures().get(i).getProperties().getInt("id"), geoJSON.getFeatures().get(i).getProperties().getInt("optE"), geoJSON.getFeatures().get(i).getProperties().getInt("optW"), geoJSON.getFeatures().get(i).getProperties().getInt("optS"), geoJSON.getFeatures().get(i).getProperties().getInt("optN"), room, (Point) geoJSON.getFeatures().get(i).getGeometry()));
+                tags.add(new Tag(geoJSON.getFeatures().get(i).getProperties().getInt("id"), geoJSON.getFeatures().get(i).getProperties().getInt("optE"), geoJSON.getFeatures().get(i).getProperties().getInt("optW"), geoJSON.getFeatures().get(i).getProperties().getInt("optS"), geoJSON.getFeatures().get(i).getProperties().getInt("optN"), geoJSON.getFeatures().get(i).getProperties().getInt("floor"), geoJSON.getFeatures().get(i).getProperties().getInt("optUp"), geoJSON.getFeatures().get(i).getProperties().getInt("optDown"),  room, (Point) geoJSON.getFeatures().get(i).getGeometry()));
             }
         }
         catch (JSONException e) {
@@ -184,7 +195,7 @@ public class WayFinder implements Runnable{
                     room="";
                 else
                     room= geoJSON.getFeatures().get(i).getProperties().getString("room");
-                tags.add(new Tag(geoJSON.getFeatures().get(i).getProperties().getInt("id"), geoJSON.getFeatures().get(i).getProperties().getInt("optE"), geoJSON.getFeatures().get(i).getProperties().getInt("optW"), geoJSON.getFeatures().get(i).getProperties().getInt("optS"), geoJSON.getFeatures().get(i).getProperties().getInt("optN"), room, (Point) geoJSON.getFeatures().get(i).getGeometry()));
+                tags.add(new Tag(geoJSON.getFeatures().get(i).getProperties().getInt("id"), geoJSON.getFeatures().get(i).getProperties().getInt("optE"), geoJSON.getFeatures().get(i).getProperties().getInt("optW"), geoJSON.getFeatures().get(i).getProperties().getInt("optS"), geoJSON.getFeatures().get(i).getProperties().getInt("optN"), geoJSON.getFeatures().get(i).getProperties().getInt("floor"), geoJSON.getFeatures().get(i).getProperties().getInt("optUp"), geoJSON.getFeatures().get(i).getProperties().getInt("optDown"), room, (Point) geoJSON.getFeatures().get(i).getGeometry()));
             }
         }
         catch (JSONException e) {
